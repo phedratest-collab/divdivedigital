@@ -21,7 +21,8 @@ To change the site: edit `build.py`, run `python3 build.py`, commit and push.
 
 ## 3. Before launch checklist
 
-- [ ] Get a free form key at web3forms.com, then put it in `CONFIG["web3forms_key"]` in `build.py` and run `python3 build.py`
+- [ ] Forms post to `/api/lead` (src/worker.js) and are saved in the KV namespace `divdivedigital-leads`. View them in Cloudflare > Storage > KV, or set an `ADMIN_KEY` secret and open `/api/leads?key=YOUR_KEY`
+- [ ] Email alerts: enable Email Routing, verify your Gmail, then uncomment `send_email` and `vars` in `wrangler.jsonc`
 - [ ] Create the mailbox `hello@divdivedigital.com` (Cloudflare Email Routing can forward it to Gmail for free)
 - [ ] Add your photo as `site/muhammad.jpg` and swap it into the About page (see comment in `about/index.html`)
 - [ ] Confirm the business promises: one practice per market, month to month after 90 days, audit delivered in 2 business days

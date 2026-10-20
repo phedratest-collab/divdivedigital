@@ -1,13 +1,23 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "divdivedigital",
+  "main": "src/worker.js",
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
   "assets": {
     "directory": "./site",
+    "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
   },
+  "kv_namespaces": [
+    { "binding": "LEADS", "id": "84cb07b062744cc5bf34787771b2a3f6" }
+  ],
+  // Email alerts (optional). Turn on Cloudflare Email Routing for divdivedigital.com,
+  // verify your Gmail as a destination address, then uncomment this block and push.
+  // "send_email": [{ "name": "LEAD_EMAIL", "destination_address": "YOUR_VERIFIED_GMAIL" }],
+  // "vars": { "LEAD_FROM": "website@divdivedigital.com", "LEAD_TO": "YOUR_VERIFIED_GMAIL" },
   "routes": [
     { "pattern": "divdivedigital.com", "custom_domain": true },
     { "pattern": "www.divdivedigital.com", "custom_domain": true }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Thank you | Dive Dive Digital</title>
-<meta name="description" content="Your audit request has been received.">
+<meta name="description" content="Your request has been received.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://divdivedigital.com/thank-you/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Dive Dive Digital">
 <meta property="og:title" content="Thank you | Dive Dive Digital">
-<meta property="og:description" content="Your audit request has been received.">
+<meta property="og:description" content="Your request has been received.">
 <meta property="og:url" content="https://divdivedigital.com/thank-you/">
 <meta property="og:image" content="https://divdivedigital.com/og-image.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -242,7 +242,13 @@ form.card{background:#fff;border:1px solid var(--line);border-radius:20px;paddin
 .f .opt{font-weight:400;color:var(--muted)}
 form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 .privacy-line{font-size:.82rem;color:var(--muted);margin:14px 0 0;text-align:center;max-width:none}
-.hp{position:absolute;left:-9999px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.form-err{background:#FBEAE8;border:1px solid #E7B5AF;color:#8E2F25;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-weight:600;font-size:.95rem}
+form .btn[disabled]{opacity:.7;cursor:wait}
+.contact-cards{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:14px}
+.contact-cards li{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:grid;grid-template-columns:28px 1fr;gap:12px}
+.contact-cards svg{width:22px;height:22px;color:var(--teal);margin-top:2px}
+.contact-cards b{display:block;color:var(--ink)}
 
 /* about */
 .portrait{aspect-ratio:4/5;border-radius:20px;background:var(--ink);display:grid;place-items:center;color:var(--saffron);font:800 5rem/1 var(--display);overflow:hidden}
@@ -299,12 +305,12 @@ form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-head"><div class="wrap head-in">
 <a class="logo" href="/" aria-label="Dive Dive Digital home"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0E2240"/><path d="M11 12l9 8 9-8" fill="none" stroke="#2BB3A8" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 21l9 8 9-8" fill="none" stroke="#F2A93B" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Dive Dive Digital</span></a>
-<nav aria-label="Main"><ul class="nav-desktop"><li><a href="/orthodontist-seo/">Orthodontist SEO</a></li><li><a href="/google-business-profile-optimization/">Google Business Profile</a></li><li><a href="/orthodontic-website-design/">Website design</a></li><li><a href="/endodontist-marketing/">Endodontists</a></li><li><a href="/about/">About</a></li><li><a class="btn btn-primary" href="/free-audit/">Get a free audit</a></li></ul>
-<details class="menu"><summary>Menu</summary><ul><li><a href="/orthodontist-seo/">Orthodontist SEO</a></li><li><a href="/google-business-profile-optimization/">Google Business Profile</a></li><li><a href="/orthodontic-website-design/">Website design</a></li><li><a href="/endodontist-marketing/">Endodontists</a></li><li><a href="/about/">About</a></li><li><a class="btn btn-primary" href="/free-audit/">Get a free audit</a></li></ul></details></nav>
+<nav aria-label="Main"><ul class="nav-desktop"><li><a href="/orthodontist-seo/">Orthodontist SEO</a></li><li><a href="/google-business-profile-optimization/">Google Business Profile</a></li><li><a href="/orthodontic-website-design/">Website design</a></li><li><a href="/endodontist-marketing/">Endodontists</a></li><li><a href="/about/">About</a></li><li><a href="/contact/">Contact</a></li><li><a class="btn btn-primary" href="/free-audit/">Get a free audit</a></li></ul>
+<details class="menu"><summary>Menu</summary><ul><li><a href="/orthodontist-seo/">Orthodontist SEO</a></li><li><a href="/google-business-profile-optimization/">Google Business Profile</a></li><li><a href="/orthodontic-website-design/">Website design</a></li><li><a href="/endodontist-marketing/">Endodontists</a></li><li><a href="/about/">About</a></li><li><a href="/contact/">Contact</a></li><li><a class="btn btn-primary" href="/free-audit/">Get a free audit</a></li></ul></details></nav>
 </div></header>
 <main id="main">
-<section class="page-hero" style="border:0"><div class="wrap"><h1>Your audit request is in.</h1>
-<p class="lede">We will send your recorded audit to your email within 2 business days. If you have a question in the meantime, email <a href="mailto:hello@divdivedigital.com">hello@divdivedigital.com</a>.</p>
+<section class="page-hero" style="border:0"><div class="wrap"><h1 id="tyH">Your audit request is in.</h1>
+<p class="lede" id="tyP">We will send your recorded audit to your email within 2 business days. If you have a question in the meantime, email <a href="mailto:hello@divdivedigital.com">hello@divdivedigital.com</a>.</p>
 <div class="cta-row"><a class="btn btn-ghost" href="/">Back to the homepage</a></div></div></section>
 </main>
 <footer class="site-foot"><div class="wrap">
@@ -320,10 +326,11 @@ form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 <div><h4>Company</h4><ul>
 <li><a href="/about/">About</a></li>
 <li><a href="/free-audit/">Free practice audit</a></li>
+<li><a href="/contact/">Contact</a></li>
 <li><a href="/privacy-policy/">Privacy policy</a></li></ul></div>
 </div>
 <div class="foot-base"><span>&copy; 2026 Dive Dive Digital. All rights reserved.</span><span>Practice names shown in examples are fictional.</span></div>
 </div></footer>
-
+<script>if(new URLSearchParams(location.search).get('form')==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}</script>
 </body>
 </html>

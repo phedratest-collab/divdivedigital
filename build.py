@@ -16,7 +16,6 @@ CONFIG = {
     "brand": "Dive Dive Digital",
     "email": "hello@divdivedigital.com",               # set up this mailbox (or change it)
     "booking_url": "/free-audit/",                       # swap for your Calendly / Cal.com link later
-    "web3forms_key": "YOUR_WEB3FORMS_ACCESS_KEY",        # free key from web3forms.com (sent to your email)
     "founder": "Muhammad Afzal",
     "linkedin": "",                                      # optional, e.g. https://www.linkedin.com/in/...
     "upwork": "",                                        # optional, link to your Upwork profile
@@ -251,7 +250,13 @@ form.card{background:#fff;border:1px solid var(--line);border-radius:20px;paddin
 .f .opt{font-weight:400;color:var(--muted)}
 form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 .privacy-line{font-size:.82rem;color:var(--muted);margin:14px 0 0;text-align:center;max-width:none}
-.hp{position:absolute;left:-9999px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.form-err{background:#FBEAE8;border:1px solid #E7B5AF;color:#8E2F25;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-weight:600;font-size:.95rem}
+form .btn[disabled]{opacity:.7;cursor:wait}
+.contact-cards{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:14px}
+.contact-cards li{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:grid;grid-template-columns:28px 1fr;gap:12px}
+.contact-cards svg{width:22px;height:22px;color:var(--teal);margin-top:2px}
+.contact-cards b{display:block;color:var(--ink)}
 
 /* about */
 .portrait{aspect-ratio:4/5;border-radius:20px;background:var(--ink);display:grid;place-items:center;color:var(--saffron);font:800 5rem/1 var(--display);overflow:hidden}
@@ -354,6 +359,7 @@ NAV = [
     ("/orthodontic-website-design/", "Website design"),
     ("/endodontist-marketing/", "Endodontists"),
     ("/about/", "About"),
+    ("/contact/", "Contact"),
 ]
 
 def header(path):
@@ -388,6 +394,7 @@ def footer():
 <div><h4>Company</h4><ul>
 <li><a href="/about/">About</a></li>
 <li><a href="/free-audit/">Free practice audit</a></li>
+<li><a href="/contact/">Contact</a></li>
 <li><a href="/privacy-policy/">Privacy policy</a></li>{extra}</ul></div>
 </div>
 <div class="foot-base"><span>&copy; {date.today().year} {CONFIG["brand"]}. All rights reserved.</span><span>Practice names shown in examples are fictional.</span></div>
@@ -482,6 +489,16 @@ def page(path, title, desc, body, schema=None, noindex=False, script=""):
     with open(fn, "w", encoding="utf-8") as f:
         f.write(doc)
     return path
+
+FORM_ERR = '<div class="form-err" role="alert" hidden id="formErr"></div>'
+FORM_JS = """<script>
+(function(){
+  var e=new URLSearchParams(location.search).get('error'),box=document.getElementById('formErr');
+  var msg={missing:'Please fill in all required fields and try again.',email:'Please enter a valid email address.',server:'Something went wrong on our side. Please try again, or email us directly.'};
+  if(e&&box&&msg[e]){box.textContent=msg[e];box.hidden=false;box.scrollIntoView({block:'center'});}
+  document.querySelectorAll('form[action="/api/lead"]').forEach(function(f){f.addEventListener('submit',function(){var b=f.querySelector('button[type=submit]');if(b){b.disabled=true;b.textContent='Sending...';}});});
+})();
+</script>"""
 
 def cta_band(h="Find out what is holding your practice back on Google.", sub="A free, recorded audit of your map rankings, Google Business Profile and website. No sales call needed to get it."):
     return f'''<section class="band"><div class="wrap"><div><h2>{h}</h2><p style="color:#E8F4F2;margin:0">{sub}</p></div>
@@ -940,12 +957,10 @@ audit_body = f'''
 <li>{ico("clock")}<span><b>Delivered within 2 business days</b> by email.</span></li>
 </ul>
 </div>
-<form class="card" action="https://api.web3forms.com/submit" method="POST">
-<input type="hidden" name="access_key" value="{CONFIG["web3forms_key"]}">
-<input type="hidden" name="subject" value="New free audit request">
-<input type="hidden" name="from_name" value="{CONFIG["brand"]} website">
-<input type="hidden" name="redirect" value="{S}/thank-you/">
-<input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
+<form class="card" action="/api/lead" method="POST">
+{FORM_ERR}
+<input type="hidden" name="form_type" value="audit">
+<input type="text" name="company_fax" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 <div class="row2">
 <div class="f"><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div>
 <div class="f"><label for="role">Your role</label><select id="role" name="role"><option>Doctor or owner</option><option>Office or practice manager</option><option>Marketing lead</option><option>Other</option></select></div>
@@ -968,20 +983,66 @@ audit_body = f'''
 '''
 page("/free-audit/", "Free Orthodontic Practice SEO Audit | " + CONFIG["brand"],
      "Free recorded audit of your orthodontic or endodontic practice: map rank grid, Google profile comparison and website review in 2 business days.",
-     audit_body, schema=[crumbs_schema(audit_trail)])
+     audit_body, schema=[crumbs_schema(audit_trail)], script=FORM_JS)
+
+# ---------------------------------------------------------------- CONTACT
+contact_trail = [("Home", "/"), ("Contact", "/contact/")]
+CONTACT_FAQ = [
+    ("How quickly will you reply?", "Within one business day, usually the same day during US business hours."),
+    ("Do you offer calls?", "Yes. Mention a good time in your message and we will send a calendar invite for a 20 minute call."),
+    ("Can I just get the free audit?", "Yes. The free practice audit is the fastest way to see where you stand, and there is no obligation to work with us."),
+]
+contact_body = f'''
+<section class="page-hero" style="border:0"><div class="wrap form-wrap">
+<div>
+{crumbs_html(contact_trail)}
+<h1>Contact us.</h1>
+<p class="lede">Questions about SEO, your Google Business Profile or a new website for your practice? Send a message and you will hear back from the specialist who would do the work.</p>
+<ul class="contact-cards">
+<li>{ico("clock")}<span><b>Reply within one business day</b>We work US business hours, Eastern to Pacific.</span></li>
+<li>{ico("shield")}<span><b>No patient information, please</b>Keep messages to your practice and marketing questions.</span></li>
+<li>{ico("chart")}<span><b>Want numbers first?</b><a href="/free-audit/">Request the free practice audit</a> instead.</span></li>
+<li>{ico("pin")}<span><b>Email us directly</b><a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a></span></li>
+</ul>
+</div>
+<form class="card" action="/api/lead" method="POST">
+{FORM_ERR}
+<input type="hidden" name="form_type" value="contact">
+<input type="text" name="company_fax" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<div class="row2">
+<div class="f"><label for="c-name">Your name</label><input id="c-name" name="name" required autocomplete="name"></div>
+<div class="f"><label for="c-email">Email</label><input id="c-email" name="email" type="email" required autocomplete="email"></div>
+</div>
+<div class="row2">
+<div class="f"><label for="c-phone">Phone <span class="opt">(optional)</span></label><input id="c-phone" name="phone" type="tel" autocomplete="tel"></div>
+<div class="f"><label for="c-practice">Practice name <span class="opt">(optional)</span></label><input id="c-practice" name="practice" autocomplete="organization"></div>
+</div>
+<div class="f"><label for="c-topic">What can we help with?</label><select id="c-topic" name="topic"><option>SEO for my practice</option><option>Google Business Profile</option><option>New website or redesign</option><option>Endodontic marketing</option><option>Something else</option></select></div>
+<div class="f"><label for="c-msg">Message</label><textarea id="c-msg" name="message" rows="5" required placeholder="Tell us a little about your practice and goals"></textarea></div>
+<button class="btn btn-primary" type="submit">Send message</button>
+<p class="privacy-line">We reply within one business day. Please do not include any patient information.</p>
+</form>
+</div></section>
+<section class="tint"><div class="wrap"><h2>Before you write</h2>{faq_html(CONTACT_FAQ)}</div></section>
+'''
+page("/contact/", "Contact | " + CONFIG["brand"] + " Dental Marketing",
+     "Contact " + CONFIG["brand"] + " about SEO, Google Business Profile optimization or a new website for your orthodontic or endodontic practice. Reply within one business day.",
+     contact_body, schema=[crumbs_schema(contact_trail), faq_schema(CONTACT_FAQ),
+                           {"@type": "ContactPage", "url": S + "/contact/", "about": {"@id": ORG_ID}}], script=FORM_JS)
 
 # ---------------------------------------------------------------- THANK YOU / PRIVACY / 404
-page("/thank-you/", "Thank you | " + CONFIG["brand"], "Your audit request has been received.",
-     f'''<section class="page-hero" style="border:0"><div class="wrap"><h1>Your audit request is in.</h1>
-<p class="lede">We will send your recorded audit to your email within 2 business days. If you have a question in the meantime, email <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>.</p>
-<div class="cta-row"><a class="btn btn-ghost" href="/">Back to the homepage</a></div></div></section>''', noindex=True)
+page("/thank-you/", "Thank you | " + CONFIG["brand"], "Your request has been received.",
+     f'''<section class="page-hero" style="border:0"><div class="wrap"><h1 id="tyH">Your audit request is in.</h1>
+<p class="lede" id="tyP">We will send your recorded audit to your email within 2 business days. If you have a question in the meantime, email <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>.</p>
+<div class="cta-row"><a class="btn btn-ghost" href="/">Back to the homepage</a></div></div></section>''', noindex=True,
+     script="""<script>if(new URLSearchParams(location.search).get('form')==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}</script>""")
 
 page("/privacy-policy/", "Privacy Policy | " + CONFIG["brand"], "How " + CONFIG["brand"] + " collects and uses information submitted through this website.",
      f'''<section><div class="wrap prose"><h1>Privacy policy</h1><p class="small">Last updated {TODAY}</p>
 <p>This policy explains how {CONFIG["brand"]} handles information you share through this website.</p>
 <h2>Information we collect</h2><p>When you request an audit or contact us, we collect the details you enter, such as your name, practice name, website, location, email address and phone number. We do not ask for, and you should not submit, any patient or health information.</p>
 <h2>How we use it</h2><p>We use your details to prepare your audit, reply to you and, if you become a client, to deliver our services. We do not sell your information.</p>
-<h2>Service providers</h2><p>Form submissions are processed by a third party form service and delivered to our email. Basic, privacy friendly website analytics may be used to understand how visitors use the site.</p>
+<h2>Service providers</h2><p>Form submissions are stored securely on our hosting provider (Cloudflare) and delivered to our email. Basic, privacy friendly website analytics may be used to understand how visitors use the site.</p>
 <h2>Your choices</h2><p>You can ask us to access, correct or delete your information at any time by emailing <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>.</p>
 </div></section>''')
 
@@ -992,14 +1053,14 @@ page("/404.html", "Page not found | " + CONFIG["brand"], "This page could not be
 
 # ---------------------------------------------------------------- static files
 INDEXABLE = ["/", "/orthodontist-seo/", "/google-business-profile-optimization/", "/orthodontic-website-design/",
-             "/endodontist-marketing/", "/about/", "/free-audit/", "/privacy-policy/"]
+             "/endodontist-marketing/", "/about/", "/contact/", "/free-audit/", "/privacy-policy/"]
 PRIO = {"/": "1.0", "/free-audit/": "0.9", "/privacy-policy/": "0.2", "/about/": "0.6"}
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 for p in INDEXABLE:
     sm.append(f"<url><loc>{S}{p}</loc><lastmod>{TODAY}</lastmod><priority>{PRIO.get(p, '0.8')}</priority></url>")
 sm.append("</urlset>")
 open(os.path.join(OUT, "sitemap.xml"), "w").write("\n".join(sm) + "\n")
-open(os.path.join(OUT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\nDisallow: /thank-you/\n\nSitemap: {S}/sitemap.xml\n")
+open(os.path.join(OUT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\nDisallow: /thank-you/\nDisallow: /api/\n\nSitemap: {S}/sitemap.xml\n")
 open(os.path.join(OUT, "favicon.svg"), "w").write(FAVICON)
 open(os.path.join(OUT, "_headers"), "w").write("""/*
   X-Content-Type-Options: nosniff
@@ -1017,7 +1078,7 @@ open(os.path.join(OUT, "_headers"), "w").write("""/*
 open(os.path.join(OUT, "_redirects"), "w").write(
     "/seo /orthodontist-seo/ 301\n/seo/ /orthodontist-seo/ 301\n/gmb /google-business-profile-optimization/ 301\n"
     "/gmb-optimization /google-business-profile-optimization/ 301\n/website-design /orthodontic-website-design/ 301\n"
-    "/contact /free-audit/ 301\n/audit /free-audit/ 301\n")
+    "/contact-us /contact/ 301\n/audit /free-audit/ 301\n")
 
 # OG image
 try:
