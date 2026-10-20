@@ -556,7 +556,7 @@ home_body = f'''
 </ul></div></section>
 
 <section><div class="wrap front">
-<div class="collage">{P("consult", w=700, h=900)}{P("aligners", w=600, h=440)}{P("waiting", w=600, h=440)}</div>
+<div class="collage">{P("consult", w=700, h=900)}{P("aligners", w=600, h=440)}{P("smile", w=600, h=440)}</div>
 <div>
 <h2>Your Google profile and website are your new front desk.</h2>
 <p class="lede">Before a parent calls about braces, they have already seen your photos, read your reviews and decided whether your practice feels right.</p>
