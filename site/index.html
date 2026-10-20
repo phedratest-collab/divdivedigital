@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://divdivedigital.com/og-image.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://images.unsplash.com"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#0E2240;--ink-2:#2A3C58;--muted:#5A6A7E;--teal:#127C76;--teal-d:#0B5F5A;
@@ -246,7 +246,39 @@ form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 
 /* about */
 .portrait{aspect-ratio:4/5;border-radius:20px;background:var(--ink);display:grid;place-items:center;color:var(--saffron);font:800 5rem/1 var(--display);overflow:hidden}
-.portrait img{width:100%;height:100%;object-fit:cover}
+.portrait img{width:100%;height:100%;object-fit:cover;border-radius:0}
+
+/* photos */
+.ph{width:100%;height:100%;object-fit:cover;border-radius:20px;background:var(--mint-2)}
+.stats{background:var(--ink);color:#C9D5E4;padding:44px 0}
+.stats ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.stats li{border-left:3px solid var(--saffron);padding-left:18px}
+.stats b{display:block;font:800 clamp(1.9rem,3.4vw,2.6rem)/1.05 var(--display);color:#fff;letter-spacing:-.02em;margin-bottom:6px}
+.stats span{font-size:.95rem;line-height:1.4;display:block}
+@media (max-width:860px){.stats ul{grid-template-columns:1fr 1fr;gap:28px 18px}}
+.front{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.front .collage{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:220px 220px;gap:14px}
+.front .collage .ph:first-child{grid-row:span 2}
+@media (max-width:900px){.front{grid-template-columns:1fr;gap:36px}.front .collage{grid-template-rows:170px 170px}}
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+.who article{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.who .ph{border-radius:0;height:200px}
+.who .in{padding:24px 26px 26px;display:flex;flex-direction:column;flex:1}
+.who .in p{margin-bottom:.9em}
+.who .more{margin-top:auto;font-weight:600}
+@media (max-width:900px){.who{grid-template-columns:1fr}}
+.cmp{width:100%;border-collapse:separate;border-spacing:0;margin-top:36px;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:.97rem}
+.cmp th,.cmp td{padding:15px 18px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp tr:last-child td{border-bottom:0}
+.cmp thead th{background:var(--paper);color:var(--ink);font-family:var(--display);font-size:1.02rem}
+.cmp thead th.us{background:var(--ink);color:#fff}
+.cmp td.us{background:#F2F8F7;color:var(--ink);font-weight:600}
+.cmp td:first-child{color:var(--ink);font-weight:600;width:26%}
+.cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:700px){.cmp{min-width:640px}}
+.hero-ph{aspect-ratio:4/3;max-width:560px;margin-left:auto}
+.page-hero.has-img .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+@media (max-width:900px){.page-hero.has-img .wrap{grid-template-columns:1fr;gap:32px}.hero-ph{margin:0}}
 
 /* footer */
 .site-foot{background:var(--ink);color:#9FB0C6;padding:64px 0 34px;font-size:.95rem}
@@ -314,6 +346,23 @@ form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 </div>
 </div></section>
 
+<section class="stats" aria-label="Experience at a glance"><div class="wrap"><ul>
+<li><b>10+</b><span>US orthodontic and endodontic practices worked with</span></li>
+<li><b>Since 2014</b><span>building and optimizing websites</span></li>
+<li><b>Since 2018</b><span>Top Rated on Upwork, including healthcare clients</span></li>
+<li><b>1 per market</b><span>we never rank you against another client of ours</span></li>
+</ul></div></section>
+
+<section><div class="wrap front">
+<div class="collage"><img class="ph" src="https://images.unsplash.com/photo-1777331903190-341a3dd0441b?auto=format&fit=crop&w=700&h=900&q=72" srcset="https://images.unsplash.com/photo-1777331903190-341a3dd0441b?auto=format&fit=crop&w=700&h=900&q=72 1x, https://images.unsplash.com/photo-1777331903190-341a3dd0441b?auto=format&fit=crop&w=1400&h=1800&q=60 2x" alt="Dentist talking with a patient in a modern dental office" width="700" height="900" loading="lazy" decoding="async"><img class="ph" src="https://images.unsplash.com/photo-1564420228450-d9a5bc8d6565?auto=format&fit=crop&w=600&h=440&q=72" srcset="https://images.unsplash.com/photo-1564420228450-d9a5bc8d6565?auto=format&fit=crop&w=600&h=440&q=72 1x, https://images.unsplash.com/photo-1564420228450-d9a5bc8d6565?auto=format&fit=crop&w=1200&h=880&q=60 2x" alt="Hands holding clear aligners and a storage case" width="600" height="440" loading="lazy" decoding="async"><img class="ph" src="https://images.unsplash.com/photo-1762625570087-6d98fca29531?auto=format&fit=crop&w=600&h=440&q=72" srcset="https://images.unsplash.com/photo-1762625570087-6d98fca29531?auto=format&fit=crop&w=600&h=440&q=72 1x, https://images.unsplash.com/photo-1762625570087-6d98fca29531?auto=format&fit=crop&w=1200&h=880&q=60 2x" alt="Modern waiting room with chairs" width="600" height="440" loading="lazy" decoding="async"></div>
+<div>
+<h2>Your Google profile and website are your new front desk.</h2>
+<p class="lede">Before a parent calls about braces, they have already seen your photos, read your reviews and decided whether your practice feels right.</p>
+<p>We make sure that first impression matches the care you give in the chair: real team and office photos, complete treatment information, fresh reviews and a website that makes booking a consultation feel easy.</p>
+<div class="cta-row"><a class="btn btn-ghost" href="/google-business-profile-optimization/">See how we optimize profiles</a></div>
+</div>
+</div></section>
+
 <section class="tint"><div class="wrap">
 <h2>Most practices lose new patients in three quiet places.</h2>
 <p class="lede">Parents and adults searching for braces or Invisalign decide fast. They compare three practices in the map pack, skim reviews, tap a website, and call whoever makes it easiest.</p>
@@ -347,6 +396,31 @@ form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 <article class="svc"><svg class="svc-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><h3>Orthodontic website design</h3><p>A fast, modern site designed by a conversion specialist, with every page built to turn a curious parent into a booked consultation.</p><a class="more" href="/orthodontic-website-design/">View the website process</a></article>
 <article class="svc wide"><svg class="svc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3c-2.5 0-4 2-4 4.6 0 3 1.4 4.4 2 7 .6 3 1 6.4 2.6 6.4 1.8 0 1.6-4.4 4.4-4.4s2.6 4.4 4.4 4.4c1.6 0 2-3.4 2.6-6.4.6-2.6 2-4 2-7C21 5 19.5 3 17 3c-2 0-3 1.2-5 1.2S9 3 7 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><div><h3>Endodontist marketing</h3><p>Show up for urgent root canal searches and make it easy for referring dentists to send patients your way.</p></div><a class="more" href="/endodontist-marketing/">Marketing for endodontists</a></article>
 </div>
+</div></section>
+
+<section><div class="wrap">
+<h2>Who we work with.</h2>
+<p class="lede">Specialist practices where a single new patient is worth a lot, and where local search decides who gets the call.</p>
+<div class="who">
+<article><img class="ph" src="https://images.unsplash.com/photo-1598256989809-394fa4f6cd26?auto=format&fit=crop&w=800&h=400&q=72" srcset="https://images.unsplash.com/photo-1598256989809-394fa4f6cd26?auto=format&fit=crop&w=800&h=400&q=72 1x, https://images.unsplash.com/photo-1598256989809-394fa4f6cd26?auto=format&fit=crop&w=1600&h=800&q=60 2x" alt="Close up of a smile with metal braces" width="800" height="400" loading="lazy" decoding="async"><div class="in"><h3>Orthodontists</h3><p>Single and multi-doctor practices offering braces, Invisalign and early treatment, competing for parents and adults in a 10 to 20 mile radius.</p><a class="more" href="/orthodontist-seo/">SEO for orthodontists</a></div></article>
+<article><img class="ph" src="https://images.unsplash.com/photo-1588776814546-daab30f310ce?auto=format&fit=crop&w=800&h=400&q=72" srcset="https://images.unsplash.com/photo-1588776814546-daab30f310ce?auto=format&fit=crop&w=800&h=400&q=72 1x, https://images.unsplash.com/photo-1588776814546-daab30f310ce?auto=format&fit=crop&w=1600&h=800&q=60 2x" alt="Two dentists performing a procedure on a patient" width="800" height="400" loading="lazy" decoding="async"><div class="in"><h3>Endodontists</h3><p>Practices that need to show up for urgent root canal searches and stay the easy choice for referring dentists.</p><a class="more" href="/endodontist-marketing/">Endodontist marketing</a></div></article>
+<article><img class="ph" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&h=400&q=72" srcset="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&h=400&q=72 1x, https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1600&h=800&q=60 2x" alt="Modern dental treatment room with chair and equipment" width="800" height="400" loading="lazy" decoding="async"><div class="in"><h3>Multi-location groups</h3><p>Groups with several offices that need every location ranking on its own, with one clear report across all of them.</p><a class="more" href="/free-audit/">Audit all your locations</a></div></article>
+</div>
+</div></section>
+
+<section class="tint"><div class="wrap">
+<h2>How we compare.</h2>
+<p class="lede">Most practices have tried a big dental marketing company or doing it in-house. Here is what changes with us.</p>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th scope="col"></th><th scope="col" class="us">Dive Dive Digital</th><th scope="col">Typical dental agency</th><th scope="col">Doing it in-house</th></tr></thead>
+<tbody>
+<tr><td>Who does the work</td><td class="us">The specialist you speak with</td><td>Account manager, work passed to a team</td><td>Your office manager, between patients</td></tr>
+<tr><td>What gets reported</td><td class="us">Calls, consult requests and map positions</td><td>Rankings and traffic</td><td>Usually nothing</td></tr>
+<tr><td>Website conversion</td><td class="us">Included, built by a CRO specialist</td><td>Template site, rarely tested</td><td>Whatever the site already does</td></tr>
+<tr><td>Competing clients</td><td class="us">One practice per local market</td><td>Often several in the same city</td><td>Not applicable</td></tr>
+<tr><td>Contract</td><td class="us">Month to month after 90 days</td><td>12 month lock-in is common</td><td>None, but costs staff time</td></tr>
+<tr><td>Who owns the assets</td><td class="us">You own your site, profile and data</td><td>Site sometimes stays with the agency</td><td>You</td></tr>
+</tbody></table></div>
 </div></section>
 
 <section><div class="wrap">

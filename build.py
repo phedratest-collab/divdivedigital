@@ -255,7 +255,39 @@ form .btn{width:100%;justify-content:center;font-size:1.05rem;padding:18px}
 
 /* about */
 .portrait{aspect-ratio:4/5;border-radius:20px;background:var(--ink);display:grid;place-items:center;color:var(--saffron);font:800 5rem/1 var(--display);overflow:hidden}
-.portrait img{width:100%;height:100%;object-fit:cover}
+.portrait img{width:100%;height:100%;object-fit:cover;border-radius:0}
+
+/* photos */
+.ph{width:100%;height:100%;object-fit:cover;border-radius:20px;background:var(--mint-2)}
+.stats{background:var(--ink);color:#C9D5E4;padding:44px 0}
+.stats ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.stats li{border-left:3px solid var(--saffron);padding-left:18px}
+.stats b{display:block;font:800 clamp(1.9rem,3.4vw,2.6rem)/1.05 var(--display);color:#fff;letter-spacing:-.02em;margin-bottom:6px}
+.stats span{font-size:.95rem;line-height:1.4;display:block}
+@media (max-width:860px){.stats ul{grid-template-columns:1fr 1fr;gap:28px 18px}}
+.front{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.front .collage{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:220px 220px;gap:14px}
+.front .collage .ph:first-child{grid-row:span 2}
+@media (max-width:900px){.front{grid-template-columns:1fr;gap:36px}.front .collage{grid-template-rows:170px 170px}}
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+.who article{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.who .ph{border-radius:0;height:200px}
+.who .in{padding:24px 26px 26px;display:flex;flex-direction:column;flex:1}
+.who .in p{margin-bottom:.9em}
+.who .more{margin-top:auto;font-weight:600}
+@media (max-width:900px){.who{grid-template-columns:1fr}}
+.cmp{width:100%;border-collapse:separate;border-spacing:0;margin-top:36px;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:.97rem}
+.cmp th,.cmp td{padding:15px 18px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp tr:last-child td{border-bottom:0}
+.cmp thead th{background:var(--paper);color:var(--ink);font-family:var(--display);font-size:1.02rem}
+.cmp thead th.us{background:var(--ink);color:#fff}
+.cmp td.us{background:#F2F8F7;color:var(--ink);font-weight:600}
+.cmp td:first-child{color:var(--ink);font-weight:600;width:26%}
+.cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:700px){.cmp{min-width:640px}}
+.hero-ph{aspect-ratio:4/3;max-width:560px;margin-left:auto}
+.page-hero.has-img .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+@media (max-width:900px){.page-hero.has-img .wrap{grid-template-columns:1fr;gap:32px}.hero-ph{margin:0}}
 
 /* footer */
 .site-foot{background:var(--ink);color:#9FB0C6;padding:64px 0 34px;font-size:.95rem}
@@ -293,6 +325,28 @@ LOGO = ('<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40
 FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#0E2240"/>'
            '<path d="M11 12l9 8 9-8" fill="none" stroke="#2BB3A8" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>'
            '<path d="M11 21l9 8 9-8" fill="none" stroke="#F2A93B" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+
+UNS = "https://images.unsplash.com/"
+def photo(pid, alt, w=1200, h=900, cls="ph", eager=False):
+    src = f"{UNS}{pid}?auto=format&fit=crop&w={w}&h={h}&q=72"
+    src2 = f"{UNS}{pid}?auto=format&fit=crop&w={w*2}&h={h*2}&q=60"
+    load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    return f'<img class="{cls}" src="{src}" srcset="{src} 1x, {src2} 2x" alt="{html.escape(alt)}" width="{w}" height="{h}" {load}>'
+
+IMG = {
+  "aligners": ("photo-1564420228450-d9a5bc8d6565", "Hands holding clear aligners and a storage case"),
+  "consult": ("photo-1777331903190-341a3dd0441b", "Dentist talking with a patient in a modern dental office"),
+  "office": ("photo-1629909613654-28e377c37b09", "Modern dental treatment room with chair and equipment"),
+  "room": ("photo-1704455306251-b4634215d98f", "Bright dental practice room with a desk and chairs"),
+  "braces": ("photo-1598256989809-394fa4f6cd26", "Close up of a smile with metal braces"),
+  "bracesmodel": ("photo-1720685193942-5a1c5ac7fd80", "Dental model with braces"),
+  "endo": ("photo-1588776814546-daab30f310ce", "Two dentists performing a procedure on a patient"),
+  "exam": ("photo-1667133295352-ef4c83620e8e", "Dentist examining a patient with a dental mirror"),
+  "waiting": ("photo-1762625570087-6d98fca29531", "Modern waiting room with chairs"),
+  "smile": ("photo-1773243906614-875ddb4918b6", "Young man smiling at the camera"),
+}
+def P(key, **kw):
+    pid, alt = IMG[key]; return photo(pid, alt, **kw)
 
 NAV = [
     ("/orthodontist-seo/", "Orthodontist SEO"),
@@ -377,7 +431,7 @@ def crumbs_html(trail):
     parts = [f'<a href="{p}">{n}</a>' for n, p in trail[:-1]] + [trail[-1][0]]
     return '<nav class="crumbs" aria-label="Breadcrumb">' + " / ".join(parts) + "</nav>"
 
-FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+FONTS = ('<link rel="preconnect" href="https://images.unsplash.com"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
          '<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">')
 
 def page(path, title, desc, body, schema=None, noindex=False, script=""):
@@ -494,6 +548,23 @@ home_body = f'''
 </div>
 </div></section>
 
+<section class="stats" aria-label="Experience at a glance"><div class="wrap"><ul>
+<li><b>10+</b><span>US orthodontic and endodontic practices worked with</span></li>
+<li><b>Since 2014</b><span>building and optimizing websites</span></li>
+<li><b>Since 2018</b><span>Top Rated on Upwork, including healthcare clients</span></li>
+<li><b>1 per market</b><span>we never rank you against another client of ours</span></li>
+</ul></div></section>
+
+<section><div class="wrap front">
+<div class="collage">{P("consult", w=700, h=900)}{P("aligners", w=600, h=440)}{P("waiting", w=600, h=440)}</div>
+<div>
+<h2>Your Google profile and website are your new front desk.</h2>
+<p class="lede">Before a parent calls about braces, they have already seen your photos, read your reviews and decided whether your practice feels right.</p>
+<p>We make sure that first impression matches the care you give in the chair: real team and office photos, complete treatment information, fresh reviews and a website that makes booking a consultation feel easy.</p>
+<div class="cta-row"><a class="btn btn-ghost" href="/google-business-profile-optimization/">See how we optimize profiles</a></div>
+</div>
+</div></section>
+
 <section class="tint"><div class="wrap">
 <h2>Most practices lose new patients in three quiet places.</h2>
 <p class="lede">Parents and adults searching for braces or Invisalign decide fast. They compare three practices in the map pack, skim reviews, tap a website, and call whoever makes it easiest.</p>
@@ -527,6 +598,31 @@ home_body = f'''
 <article class="svc">{ico("screen").replace("<svg", '<svg class="svc-ico"')}<h3>Orthodontic website design</h3><p>A fast, modern site designed by a conversion specialist, with every page built to turn a curious parent into a booked consultation.</p><a class="more" href="/orthodontic-website-design/">View the website process</a></article>
 <article class="svc wide">{ico("tooth").replace("<svg", '<svg class="svc-ico"')}<div><h3>Endodontist marketing</h3><p>Show up for urgent root canal searches and make it easy for referring dentists to send patients your way.</p></div><a class="more" href="/endodontist-marketing/">Marketing for endodontists</a></article>
 </div>
+</div></section>
+
+<section><div class="wrap">
+<h2>Who we work with.</h2>
+<p class="lede">Specialist practices where a single new patient is worth a lot, and where local search decides who gets the call.</p>
+<div class="who">
+<article>{P("braces", w=800, h=400)}<div class="in"><h3>Orthodontists</h3><p>Single and multi-doctor practices offering braces, Invisalign and early treatment, competing for parents and adults in a 10 to 20 mile radius.</p><a class="more" href="/orthodontist-seo/">SEO for orthodontists</a></div></article>
+<article>{P("endo", w=800, h=400)}<div class="in"><h3>Endodontists</h3><p>Practices that need to show up for urgent root canal searches and stay the easy choice for referring dentists.</p><a class="more" href="/endodontist-marketing/">Endodontist marketing</a></div></article>
+<article>{P("office", w=800, h=400)}<div class="in"><h3>Multi-location groups</h3><p>Groups with several offices that need every location ranking on its own, with one clear report across all of them.</p><a class="more" href="/free-audit/">Audit all your locations</a></div></article>
+</div>
+</div></section>
+
+<section class="tint"><div class="wrap">
+<h2>How we compare.</h2>
+<p class="lede">Most practices have tried a big dental marketing company or doing it in-house. Here is what changes with us.</p>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th scope="col"></th><th scope="col" class="us">{CONFIG["brand"]}</th><th scope="col">Typical dental agency</th><th scope="col">Doing it in-house</th></tr></thead>
+<tbody>
+<tr><td>Who does the work</td><td class="us">The specialist you speak with</td><td>Account manager, work passed to a team</td><td>Your office manager, between patients</td></tr>
+<tr><td>What gets reported</td><td class="us">Calls, consult requests and map positions</td><td>Rankings and traffic</td><td>Usually nothing</td></tr>
+<tr><td>Website conversion</td><td class="us">Included, built by a CRO specialist</td><td>Template site, rarely tested</td><td>Whatever the site already does</td></tr>
+<tr><td>Competing clients</td><td class="us">One practice per local market</td><td>Often several in the same city</td><td>Not applicable</td></tr>
+<tr><td>Contract</td><td class="us">Month to month after 90 days</td><td>12 month lock-in is common</td><td>None, but costs staff time</td></tr>
+<tr><td>Who owns the assets</td><td class="us">You own your site, profile and data</td><td>Site sometimes stays with the agency</td><td>You</td></tr>
+</tbody></table></div>
 </div></section>
 
 <section><div class="wrap">
@@ -629,18 +725,21 @@ page("/", "Orthodontist SEO & Marketing Agency | " + CONFIG["brand"],
      script=HOME_JS)
 
 # ---------------------------------------------------------------- SERVICE PAGES
-def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note, faqs, related, stype, sname):
+def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note, faqs, related, stype, sname, img="office"):
     incl_html = "".join(f'<li><h3>{h}</h3><p>{p}</p></li>' for h, p in incl)
     steps_html = "".join(f'<li><span class="when">{w}</span><h3>{h}</h3><p>{p}</p></li>' for w, h, p in steps)
     kw_html = "".join(f"<tr><td>{a}</td><td>{b}</td></tr>" for a, b in kw_rows)
     rel_html = "".join(f'<a href="{p}"><b>{t}</b>{d}</a>' for p, t, d in related)
     trail = [("Home", "/"), (crumb, path)]
     body = f'''
-<section class="page-hero"><div class="wrap">
+<section class="page-hero has-img"><div class="wrap">
+<div>
 {crumbs_html(trail)}
 <h1>{h1}</h1>
 <p class="lede">{lede}</p>
 <div class="cta-row"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a><a class="btn btn-ghost" href="#included">What is included</a></div>
+</div>
+<div class="hero-ph">{P(img, w=900, h=675, eager=True)}</div>
 </div></section>
 <section id="included"><div class="wrap">
 <h2>What is included</h2>
@@ -700,7 +799,7 @@ service_page(
      ("Will you write the content?", "Yes. We write treatment and location pages for patients, then send them to you for a quick clinical accuracy check before publishing."),
      ("How do you report results?", "Every month you get calls from your Google profile, consult requests from your website, map rank grids for your main searches and a short summary of next steps.")],
     [REL["gbp"], REL["web"], REL["endo"]],
-    "Local SEO for orthodontic practices", "Orthodontist SEO")
+    "Local SEO for orthodontic practices", "Orthodontist SEO", img="bracesmodel")
 
 service_page(
     "/google-business-profile-optimization/", "Google Business Profile optimization",
@@ -728,7 +827,7 @@ service_page(
      ("Will you post fake reviews?", "Never. Fake reviews break Google's rules and can get your profile suspended. We help you ask real patients at the right moment, which works better anyway."),
      ("Do you need ownership of our profile?", "No. We request manager access. Your practice always stays the primary owner.")],
     [REL["seo"], REL["web"], REL["endo"]],
-    "Google Business Profile optimization", "Google Business Profile optimization for orthodontists")
+    "Google Business Profile optimization", "Google Business Profile optimization for orthodontists", img="consult")
 
 service_page(
     "/orthodontic-website-design/", "Orthodontic website design",
@@ -756,7 +855,7 @@ service_page(
      ("Can we keep our current domain and branding?", "Yes. We can work with your existing brand or refresh it as part of the project."),
      ("Is the contact form HIPAA safe?", "Our consult forms only collect contact details and the treatment of interest. If you need intake forms with health information, we connect a HIPAA compliant form provider.")],
     [REL["seo"], REL["gbp"], REL["endo"]],
-    "Website design for orthodontic practices", "Orthodontic website design")
+    "Website design for orthodontic practices", "Orthodontic website design", img="office")
 
 service_page(
     "/endodontist-marketing/", "Endodontist marketing",
@@ -784,7 +883,7 @@ service_page(
      ("Do you work with multi-location endodontic groups?", "Yes. Each location gets its own profile optimization, location page and tracking."),
      ("How do you measure results?", "Calls from Google, website referral submissions, appointment requests and map pack positions for your urgent searches.")],
     [REL["gbp"], REL["seo"], REL["web"]],
-    "Endodontist marketing and local SEO", "Endodontist marketing")
+    "Endodontist marketing and local SEO", "Endodontist marketing", img="endo")
 
 # ---------------------------------------------------------------- ABOUT
 about_trail = [("Home", "/"), ("About", "/about/")]
@@ -796,7 +895,7 @@ about_body = f'''
 <p class="lede">{CONFIG["brand"]} helps orthodontists and endodontists get more new patients from Google. We are deliberately small and deliberately focused, so you work directly with the person doing the work.</p>
 <div class="cta-row"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a></div>
 </div>
-<div class="portrait" aria-label="{CONFIG["founder"]}"><!-- Replace with: <img src="/muhammad.jpg" alt="{CONFIG["founder"]}, founder of {CONFIG["brand"]}" width="800" height="1000"> -->MA</div>
+<div class="portrait"><!-- Swap for your own photo: <img src="/muhammad.jpg" alt="{CONFIG["founder"]}, founder of {CONFIG["brand"]}" width="800" height="1000"> -->{P("room", w=800, h=1000, eager=True)}</div>
 </div></section>
 <section><div class="wrap split">
 <div>
