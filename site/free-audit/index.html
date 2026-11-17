@@ -315,6 +315,15 @@ form .btn[disabled]{opacity:.7;cursor:wait}
 @media (max-width:760px){.ticks{columns:1}}
 .extra-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:start}
 @media (max-width:860px){.extra-grid{grid-template-columns:1fr;gap:28px}}
+.price-line{margin:18px 0 0;font-size:.98rem;color:var(--muted)}.price-line b{color:var(--ink)}
+.prices{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px}
+.prices article{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column}
+.prices .amt{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--ink);margin:2px 0 10px}
+.prices p{font-size:.95rem;flex:1}
+@media (max-width:1000px){.prices{grid-template-columns:1fr 1fr}}@media (max-width:560px){.prices{grid-template-columns:1fr}}
+.reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:30px}
+.reviews figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px}
+.reviews blockquote{margin:0 0 14px;font-size:1.02rem;color:var(--ink-2)}
 .offices-inline{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
 .offices-inline address{font-style:normal;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;font-size:.95rem}
 @media (max-width:560px){.offices-inline{grid-template-columns:1fr}}

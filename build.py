@@ -21,6 +21,21 @@ CONFIG = {
     "upwork": "",                                        # optional, link to your Upwork profile
     "scheduler": "",                                     # optional, Calendly / Cal.com link for a 20 minute call
 }
+# Prices shown on the site (USD). Positioned mid-market for US dental specialist marketing.
+PRICES = {
+    "seo":   {"from": 1500, "unit": "month", "label": "Orthodontist SEO", "note": "per location, Google Business Profile included"},
+    "gbp":   {"from": 500,  "unit": "month", "label": "Google Business Profile", "note": "plus a one-time $750 profile rebuild"},
+    "web":   {"from": 4500, "unit": "project", "label": "Website design", "note": "most practice sites land between $5,000 and $9,500"},
+    "endo":  {"from": 1500, "unit": "month", "label": "Endodontist marketing", "note": "per location, referral pages included"},
+}
+def price_txt(k):
+    v = PRICES[k]; return f'${v["from"]:,}' + ("/month" if v["unit"] == "month" else "")
+
+# Real client reviews only. Add once a client gives permission, e.g.
+# {"quote": "...", "name": "Dr. Jane Smith", "role": "Orthodontist", "place": "Austin, TX", "source": "Upwork"}
+# The reviews section stays hidden while this list is empty.
+REVIEWS = []
+
 OFFICES = [
     {"label": "USA office", "street": "5900 Balcones Drive, Suite 100", "city": "Austin", "region": "TX",
      "postal": "78731", "country": "US", "country_name": "USA", "phone": "+1 321 490-9188", "tel": "+13214909188"},
@@ -320,6 +335,15 @@ form .btn[disabled]{opacity:.7;cursor:wait}
 @media (max-width:760px){.ticks{columns:1}}
 .extra-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:start}
 @media (max-width:860px){.extra-grid{grid-template-columns:1fr;gap:28px}}
+.price-line{margin:18px 0 0;font-size:.98rem;color:var(--muted)}.price-line b{color:var(--ink)}
+.prices{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px}
+.prices article{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column}
+.prices .amt{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--ink);margin:2px 0 10px}
+.prices p{font-size:.95rem;flex:1}
+@media (max-width:1000px){.prices{grid-template-columns:1fr 1fr}}@media (max-width:560px){.prices{grid-template-columns:1fr}}
+.reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:30px}
+.reviews figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px}
+.reviews blockquote{margin:0 0 14px;font-size:1.02rem;color:var(--ink-2)}
 .offices-inline{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
 .offices-inline address{font-style:normal;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;font-size:.95rem}
 @media (max-width:560px){.offices-inline{grid-template-columns:1fr}}
@@ -458,10 +482,12 @@ def crumbs_schema(trail):
     return {"@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "name": n, "item": S + p} for i, (n, p) in enumerate(trail)]}
 
-def service_schema(name, desc, path, stype):
+def service_schema(name, desc, path, stype, pkey=None):
     return {"@type": "Service", "name": name, "serviceType": stype, "description": desc,
             "provider": {"@id": ORG_ID}, "areaServed": {"@type": "Country", "name": "United States"},
-            "url": S + path}
+            "url": S + path,
+            **({"offers": {"@type": "Offer", "priceCurrency": "USD", "price": PRICES[pkey]["from"],
+                "description": "Starting price, " + PRICES[pkey]["note"]}} if pkey else {})}
 
 def faq_html(faqs):
     return '<div class="faq">' + "".join(
@@ -581,9 +607,15 @@ HOME_FAQ = [
      "Yes. Our marketing forms only ask for contact details and the treatment a person is interested in, never health history. We never put patient information into analytics or ad platforms, and we can set up HIPAA compliant form tools when your practice needs them."),
     ("Are we locked into a long contract?",
      "No. Monthly SEO and Google Business Profile work runs month to month after the first 90 days, because results should be the reason you stay."),
+    ("How much does orthodontist marketing cost?",
+     "Orthodontist SEO starts at $1,500 per month per location with Google Business Profile included, profile management alone starts at $500 per month, and new practice websites start at $4,500. Everything runs month to month after the first 90 days."),
     ("Do you also work with endodontists?",
      "Yes. Endodontic practices get a version of our program built around referral relationships and urgent searches like root canal near me or emergency endodontist."),
 ]
+
+REVIEWS_HTML = ("" if not REVIEWS else '<section class="tint"><div class="wrap"><h2>What practices say.</h2><div class="reviews">' + "".join(
+    f'<figure><blockquote>{html.escape(r["quote"])}</blockquote><figcaption><b>{html.escape(r["name"])}</b>, {html.escape(r["role"])}, {html.escape(r["place"])}'
+    + (f' <span class="small">via {html.escape(r["source"])}</span>' if r.get("source") else "") + '</figcaption></figure>' for r in REVIEWS) + '</div></div></section>')
 
 home_body = f'''
 <section class="hero"><div class="wrap hero-grid">
@@ -689,6 +721,18 @@ home_body = f'''
 </tbody></table></div>
 </div></section>
 
+<section id="pricing"><div class="wrap">
+<h2>Simple, published pricing.</h2>
+<p class="lede">No setup traps or 12 month lock-ins. Every program runs month to month after the first 90 days, and the audit is free.</p>
+<div class="prices">
+<article><h3>Orthodontist SEO</h3><div class="amt">From {price_txt("seo")}</div><p>{PRICES["seo"]["note"][:1].upper()}{PRICES["seo"]["note"][1:]}. Treatment pages, technical SEO, citations and call tracking.</p><a class="more" href="/orthodontist-seo/">What is included</a></article>
+<article><h3>Google Business Profile</h3><div class="amt">From {price_txt("gbp")}</div><p>{PRICES["gbp"]["note"][:1].upper()}{PRICES["gbp"]["note"][1:]}. Posts, photos, review replies and rank grids.</p><a class="more" href="/google-business-profile-optimization/">What is included</a></article>
+<article><h3>Website design</h3><div class="amt">From {price_txt("web")}</div><p>{PRICES["web"]["note"][:1].upper()}{PRICES["web"]["note"][1:]}. Built for speed, SEO and booked consults.</p><a class="more" href="/orthodontic-website-design/">What is included</a></article>
+<article><h3>Endodontist marketing</h3><div class="amt">From {price_txt("endo")}</div><p>{PRICES["endo"]["note"][:1].upper()}{PRICES["endo"]["note"][1:]}. Urgent search visibility and a dentist referral form.</p><a class="more" href="/endodontist-marketing/">What is included</a></article>
+</div>
+<p class="small" style="margin-top:18px">Prices in USD. Multi-location groups and very competitive metro areas are quoted after the free audit.</p>
+</div></section>
+{REVIEWS_HTML}
 <section><div class="wrap">
 <h2>What is one more case start worth to you?</h2>
 <p class="lede">Orthodontic treatment is a high value decision, so a small lift in new patients goes a long way. Enter your own numbers.</p>
@@ -790,7 +834,7 @@ page("/", "Orthodontist Marketing & SEO Agency | " + CONFIG["brand"],
      script=HOME_JS)
 
 # ---------------------------------------------------------------- SERVICE PAGES
-def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note, faqs, related, stype, sname, img="office", extra="", og="og-image.png"):
+def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note, faqs, related, stype, sname, img="office", extra="", og="og-image.png", pkey=None):
     incl_html = "".join(f'<li><h3>{h}</h3><p>{p}</p></li>' for h, p in incl)
     steps_html = "".join(f'<li><span class="when">{w}</span><h3>{h}</h3><p>{p}</p></li>' for w, h, p in steps)
     kw_html = "".join(f"<tr><td>{a}</td><td>{b}</td></tr>" for a, b in kw_rows)
@@ -803,6 +847,7 @@ def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note,
 <h1>{h1}</h1>
 <p class="lede">{lede}</p>
 <div class="cta-row"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a><a class="btn btn-ghost" href="#included">What is included</a></div>
+{(f'<p class="price-line">Starting at <b>{price_txt(pkey)}</b>, {PRICES[pkey]["note"]}. Month to month after 90 days.</p>' if PRICES[pkey]["unit"] == "month" else f'<p class="price-line">Starting at <b>{price_txt(pkey)}</b>, {PRICES[pkey]["note"]}.</p>') if pkey else ""}
 </div>
 <div class="hero-ph">{P(img, w=900, h=675, eager=True)}</div>
 </div></section>
@@ -829,7 +874,7 @@ def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note,
 </div></section>
 {cta_band()}
 '''
-    page(path, title, desc, body, schema=[service_schema(sname, desc, path, stype), faq_schema(faqs), crumbs_schema(trail)], og=og)
+    page(path, title, desc, body, schema=[service_schema(sname, desc, path, stype, pkey), faq_schema(faqs), crumbs_schema(trail)], og=og)
 
 REL = {
     "seo": ("/orthodontist-seo/", "Orthodontist SEO", "Rank for braces and Invisalign searches in your towns."),
@@ -863,9 +908,10 @@ service_page(
     [("How long does orthodontist SEO take?", "Map pack improvements often show in 4 to 8 weeks. Organic rankings for competitive treatment searches usually take 3 to 6 months, depending on competition and your current site."),
      ("Do I need a new website for SEO to work?", "Not always. If your current site is fast and easy to edit, we optimize it. If it is slow, outdated or hard to update, a rebuild usually pays for itself in better rankings and more consult requests."),
      ("Will you write the content?", "Yes. We write treatment and location pages for patients, then send them to you for a quick clinical accuracy check before publishing."),
-     ("How do you report results?", "Every month you get calls from your Google profile, consult requests from your website, map rank grids for your main searches and a short summary of next steps.")],
+     ("How do you report results?", "Every month you get calls from your Google profile, consult requests from your website, map rank grids for your main searches and a short summary of next steps."),
+     ("How much does orthodontist SEO cost?", "Our orthodontist SEO starts at $1,500 per month per location, with Google Business Profile optimization included. Most dental SEO programs in the US cost between $1,000 and $2,500 per month. Competitive metro areas or multi-location groups need more work, and we quote those after the free audit. It runs month to month after the first 90 days.")],
     [REL["gbp"], REL["web"], REL["endo"]],
-    "Local SEO for orthodontic practices", "Orthodontist SEO", img="bracesmodel", og="og-orthodontist-seo.png",
+    "Local SEO for orthodontic practices", "Orthodontist SEO", img="bracesmodel", og="og-orthodontist-seo.png", pkey="seo",
     extra=f'''<section class="tint"><div class="wrap extra-grid">
 <div>
 <h2>Why orthodontist SEO is different</h2>
@@ -910,9 +956,10 @@ service_page(
     [("What is the difference between GMB and Google Business Profile?", "They are the same thing. Google renamed Google My Business to Google Business Profile, but many people still call it GMB."),
      ("How fast can map rankings improve?", "Practices with clear gaps, like wrong categories or missing services, often see movement within 4 to 8 weeks of fixes."),
      ("Will you post fake reviews?", "Never. Fake reviews break Google's rules and can get your profile suspended. We help you ask real patients at the right moment, which works better anyway."),
-     ("Do you need ownership of our profile?", "No. We request manager access. Your practice always stays the primary owner.")],
+     ("Do you need ownership of our profile?", "No. We request manager access. Your practice always stays the primary owner."),
+     ("How much does Google Business Profile optimization cost?", "A one-time profile rebuild is $750. Ongoing management, with weekly posts, photos, review replies and monthly rank grids, starts at $500 per month per location. It is also included in our orthodontist SEO and endodontist marketing programs.")],
     [REL["seo"], REL["web"], REL["endo"]],
-    "Google Business Profile optimization", "Google Business Profile optimization for orthodontists", img="consult", og="og-google-business-profile.png",
+    "Google Business Profile optimization", "Google Business Profile optimization for orthodontists", img="consult", og="og-google-business-profile.png", pkey="gbp",
     extra=f'''<section class="tint"><div class="wrap">
 <h2>What a complete orthodontist profile has</h2>
 <p class="lede">Whether you call it your Google Business Profile or still call it GMB, this is the checklist we work from.</p>
@@ -951,9 +998,10 @@ service_page(
     [("How long does a new orthodontic website take?", "Most practice websites take 4 to 6 weeks from kickoff to launch, depending on how quickly content and feedback come back."),
      ("Will we lose our Google rankings?", "Not when it is done right. We map every old URL to its new page, keep what is working and monitor rankings closely after launch."),
      ("Can we keep our current domain and branding?", "Yes. We can work with your existing brand or refresh it as part of the project."),
-     ("Is the contact form HIPAA safe?", "Our consult forms only collect contact details and the treatment of interest. If you need intake forms with health information, we connect a HIPAA compliant form provider.")],
+     ("Is the contact form HIPAA safe?", "Our consult forms only collect contact details and the treatment of interest. If you need intake forms with health information, we connect a HIPAA compliant form provider."),
+     ("How much does an orthodontic website cost?", "Our orthodontic websites start at $4,500, and most single-location practice sites land between $5,000 and $9,500 depending on the number of treatment and location pages, the smile gallery and integrations. Hosting and care plans start at $150 per month. You own the site and the domain.")],
     [REL["seo"], REL["gbp"], REL["endo"]],
-    "Website design for orthodontic practices", "Orthodontic website design", img="office", og="og-orthodontic-website-design.png",
+    "Website design for orthodontic practices", "Orthodontic website design", img="office", og="og-orthodontic-website-design.png", pkey="web",
     extra=f'''<section class="tint"><div class="wrap">
 <h2>Pages every orthodontic site needs</h2>
 <p class="lede">The structure we start from, adjusted to the treatments and locations you actually offer.</p>
@@ -993,9 +1041,10 @@ service_page(
      ("Can you build a referral form for dentists?", "Yes. We build a simple online referral form and can connect it to a HIPAA compliant provider when it includes patient details."),
      ("Do you work with multi-location endodontic groups?", "Yes. Each location gets its own profile optimization, location page and tracking."),
      ("How do you measure results?", "Calls from Google, website referral submissions, appointment requests and map pack positions for your urgent searches."),
+     ("How much does endodontist marketing cost?", "Endodontist marketing starts at $1,500 per month per location, including Google Business Profile management, urgent search pages and the referral section of your site. It runs month to month after the first 90 days."),
      ("Does emergency endodontist SEO work if we do not take walk ins?", "Yes. Most people searching for an emergency endodontist want to be seen quickly, not to walk in. We write your pages and Google profile around your real policy, whether that is same day or next day appointments, so callers know what to expect and the right patients call.")],
     [REL["gbp"], REL["seo"], REL["web"]],
-    "Endodontist marketing and local SEO", "Endodontist marketing", img="endo", og="og-endodontist-marketing.png",
+    "Endodontist marketing and local SEO", "Endodontist marketing", img="endo", og="og-endodontist-marketing.png", pkey="endo",
     extra=f'''<section class="tint"><div class="wrap extra-grid">
 <div>
 <h2>Built for referring dentists</h2>
@@ -1024,9 +1073,11 @@ about_body = f'''
 <section><div class="wrap split">
 <div>
 <h2>About {CONFIG["founder"]}</h2>
-<p>Muhammad has been building and optimizing websites since 2014. He spent a year delivering SEO and Google Business Profile optimization for dental practices through a marketing agency, and has worked as a conversion rate optimization specialist for e-commerce, SaaS and service businesses in the US and Europe.</p>
-<p>He has designed and built websites for US orthodontic practices, run A/B tests in VWO and Intelligems, built landing pages in Instapage and Unbounce, and has been Top Rated on Upwork since 2018, including work for healthcare clients.</p>
-<p>He started {CONFIG["brand"]} to give specialist practices something most dental marketing companies do not: rankings and conversion handled by the same person, with honest reporting on what actually brings in patients.</p>
+<p>{CONFIG["founder"]} is a search and conversion specialist with more than a decade of experience building websites that turn visitors into customers. He holds a degree in computer science and has been building and optimizing websites since 2014.</p>
+<p>Before founding {CONFIG["brand"]}, he spent a year delivering local SEO and Google Business Profile optimization for dental practices through a US marketing agency, and has since worked with more than 10 orthodontic and endodontic practices across the United States. He has designed and built websites for orthodontists on Webflow and WordPress, rebuilt Google profiles that were losing the map pack, and set up the call and form tracking that shows a doctor which channel actually produced a new patient.</p>
+<p>Alongside dental work, he has spent years as a conversion rate optimization specialist for e-commerce, SaaS and service brands in the US and Europe: running A/B tests in VWO and Intelligems, building landing pages and funnels in Instapage, Unbounce and GoHighLevel, and auditing websites for the small changes that lift bookings. He has been Top Rated on Upwork since 2018, including work for healthcare clients.</p>
+<p>He started {CONFIG["brand"]} because most dental marketing companies stop at rankings. Specialist practices deserve SEO and conversion handled by the same person, one practice per market, with honest monthly reporting on calls and consult requests rather than traffic charts.</p>
+{('<p>' + ' &middot; '.join(x for x in [('<a href="' + CONFIG["linkedin"] + '" rel="me noopener">LinkedIn</a>') if CONFIG["linkedin"] else '', ('<a href="' + CONFIG["upwork"] + '" rel="me noopener">Upwork profile and reviews</a>') if CONFIG["upwork"] else ''] if x) + '</p>') if (CONFIG["linkedin"] or CONFIG["upwork"]) else ''}
 </div>
 <div>
 <h2>How we work</h2>
