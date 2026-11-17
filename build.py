@@ -19,7 +19,18 @@ CONFIG = {
     "founder": "Muhammad Afzal",
     "linkedin": "",                                      # optional, e.g. https://www.linkedin.com/in/...
     "upwork": "",                                        # optional, link to your Upwork profile
+    "scheduler": "",                                     # optional, Calendly / Cal.com link for a 20 minute call
 }
+OFFICES = [
+    {"label": "USA office", "street": "5900 Balcones Drive, Suite 100", "city": "Austin", "region": "TX",
+     "postal": "78731", "country": "US", "country_name": "USA", "phone": "+1 321 490-9188", "tel": "+13214909188"},
+    {"label": "UK office", "street": "275 New North Road, Islington #1795", "city": "London", "region": "",
+     "postal": "N1 7AA", "country": "GB", "country_name": "UK", "phone": "+44 7716 408844", "tel": "+447716408844"},
+]
+def office_html(o):
+    loc = f'{o["city"]}, {o["region"]} {o["postal"]}' if o["region"] else f'{o["city"]} {o["postal"]}'
+    return (f'<address><b>{o["label"]}</b><br>{o["street"]}<br>{loc}, {o["country_name"]}<br>'
+            f'<a href="tel:{o["tel"]}">{o["phone"]}</a></address>')
 TODAY = date.today().isoformat()
 S = CONFIG["site_url"].rstrip("/")
 shutil.rmtree(OUT, ignore_errors=True)
@@ -296,7 +307,22 @@ form .btn[disabled]{opacity:.7;cursor:wait}
 
 /* footer */
 .site-foot{background:var(--ink);color:#9FB0C6;padding:64px 0 34px;font-size:.95rem}
-.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr .8fr 1.1fr;gap:36px}
+.site-foot address{font-style:normal;margin:0 0 16px;line-height:1.55}
+.site-foot address b{color:#fff;font-weight:600}
+@media (max-width:1000px) and (min-width:761px){.foot-grid{grid-template-columns:1fr 1fr}}
+.steps3{list-style:none;counter-reset:s;padding:0;margin:0 0 22px;display:grid;gap:10px}
+.steps3 li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:.95rem}
+.steps3 li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--mint-2);color:var(--teal-d);font-weight:700;display:grid;place-items:center;font-size:.85rem}
+.ticks{columns:2;column-gap:40px;padding:0;list-style:none;margin:26px 0 0}
+.ticks li{break-inside:avoid;padding-left:30px;position:relative;margin:0 0 12px}
+.ticks li::before{content:"";position:absolute;left:0;top:7px;width:16px;height:16px;border-radius:5px;background:var(--mint-2)}
+@media (max-width:760px){.ticks{columns:1}}
+.extra-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:start}
+@media (max-width:860px){.extra-grid{grid-template-columns:1fr;gap:28px}}
+.offices-inline{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+.offices-inline address{font-style:normal;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;font-size:.95rem}
+@media (max-width:560px){.offices-inline{grid-template-columns:1fr}}
 .site-foot .logo{color:#fff;margin-bottom:14px}
 .site-foot h4{color:#fff;font-size:1rem;margin-bottom:12px}
 .site-foot ul{list-style:none;margin:0;padding:0}
@@ -385,7 +411,7 @@ def footer():
 <div class="foot-grid">
 <div><a class="logo" href="/">{LOGO}<span>{CONFIG["brand"]}</span></a>
 <p>Local SEO, Google Business Profile optimization and conversion-focused websites for orthodontic and endodontic practices in the United States.</p>
-<p><a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a><br>Remote team, working US business hours.</p></div>
+<p><a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a><br>Small team, working US business hours.</p></div>
 <div><h4>Services</h4><ul>
 <li><a href="/orthodontist-seo/">SEO for orthodontists</a></li>
 <li><a href="/google-business-profile-optimization/">Google Business Profile optimization</a></li>
@@ -396,6 +422,7 @@ def footer():
 <li><a href="/free-audit/">Free practice audit</a></li>
 <li><a href="/contact/">Contact</a></li>
 <li><a href="/privacy-policy/">Privacy policy</a></li>{extra}</ul></div>
+<div><h4>Offices</h4>{"".join(office_html(o) for o in OFFICES)}</div>
 </div>
 <div class="foot-base"><span>&copy; {date.today().year} {CONFIG["brand"]}. All rights reserved.</span><span>Practice names shown in examples are fictional.</span></div>
 </div></footer>'''
@@ -406,12 +433,18 @@ ORG = {
     "@id": ORG_ID,
     "name": CONFIG["brand"],
     "url": S + "/",
-    "logo": S + "/favicon.svg",
+    "logo": S + "/logo-512.png",
     "image": S + "/og-image.png",
     "email": CONFIG["email"],
+    "telephone": OFFICES[0]["phone"],
+    "address": [{"@type": "PostalAddress", "streetAddress": o["street"], "addressLocality": o["city"],
+                 **({"addressRegion": o["region"]} if o["region"] else {}), "postalCode": o["postal"],
+                 "addressCountry": o["country"]} for o in OFFICES],
+    "contactPoint": [{"@type": "ContactPoint", "telephone": o["phone"], "contactType": "sales",
+                      "email": CONFIG["email"], "areaServed": "US"} for o in OFFICES],
     "description": "Dental marketing agency providing local SEO, Google Business Profile optimization and website design for orthodontists and endodontists in the United States.",
     "areaServed": {"@type": "Country", "name": "United States"},
-    "founder": {"@type": "Person", "name": CONFIG["founder"]},
+    "founder": {"@type": "Person", "name": CONFIG["founder"], "url": S + "/about/"},
     "knowsAbout": ["Orthodontist SEO", "Dental SEO", "Google Business Profile optimization", "Local SEO",
                    "Orthodontic website design", "Endodontist marketing", "Conversion rate optimization"],
     "sameAs": [u for u in [CONFIG["linkedin"], CONFIG["upwork"]] if u],
@@ -441,7 +474,7 @@ def crumbs_html(trail):
 FONTS = ('<link rel="preconnect" href="https://images.unsplash.com"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
          '<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">')
 
-def page(path, title, desc, body, schema=None, noindex=False, script=""):
+def page(path, title, desc, body, schema=None, noindex=False, script="", og="og-image.png"):
     graph = [ORG, {"@type": "WebSite", "@id": S + "/#website", "url": S + "/", "name": CONFIG["brand"], "publisher": {"@id": ORG_ID}}]
     graph += schema or []
     ld = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
@@ -465,16 +498,21 @@ def page(path, title, desc, body, schema=None, noindex=False, script=""):
 <meta name="description" content="{html.escape(desc)}">
 {robots}
 <link rel="canonical" href="{canon}">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#0E2240">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{CONFIG["brand"]}">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:url" content="{canon}">
-<meta property="og:image" content="{S}/og-image.png">
+<meta property="og:image" content="{S}/{og}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{html.escape(title)}">
+<meta name="twitter:description" content="{html.escape(desc)}">
+<meta name="twitter:image" content="{S}/{og}">
 {FONTS}
 <style>{CSS}</style>
 <script type="application/ld+json">{ld}</script>
@@ -550,8 +588,8 @@ HOME_FAQ = [
 home_body = f'''
 <section class="hero"><div class="wrap hero-grid">
 <div>
-<h1>More consult bookings for your orthodontic practice, straight from Google.</h1>
-<p class="lede">Local SEO, Google Business Profile optimization and conversion-focused websites, built only for orthodontists and endodontists. We report on new patient calls and consult requests, not vanity rankings.</p>
+<h1>Orthodontist marketing that books more consults straight from Google.</h1>
+<p class="lede">Dive Dive Digital is an orthodontist marketing agency for practices that want more consult requests from Google. We combine local SEO, Google Business Profile optimization and conversion focused website work, and we take one orthodontic practice per local market.</p>
 <div class="cta-row"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a><a class="btn btn-ghost" href="#how">See how it works</a></div>
 <ul class="proof-strip">
 <li>{ico("check")}Specialist dental practices only</li>
@@ -596,7 +634,7 @@ home_body = f'''
 <p class="lede">Parents and adults searching for braces or Invisalign decide fast. They compare three practices in the map pack, skim reviews, tap a website, and call whoever makes it easiest.</p>
 <div class="leaks">
 <div class="leak"><div class="big">Map pack</div><h3>You are not in the top three</h3><p>Around three practices get most of the calls from a local search. If your Google Business Profile has the wrong categories, thin services and few fresh reviews, you sit below the fold on a phone.</p></div>
-<div class="leak"><div class="big">Profile</div><h3>Your profile does not convince</h3><p>Old photos, no treatment details, unanswered questions and a review count that lags competitors. People compare profiles side by side, and the more complete one wins the tap.</p></div>
+<div class="leak"><div class="big">Profile</div><h3>Your profile does not convince</h3><p>Old photos, no treatment details, missing services and a review count that lags competitors. People compare profiles side by side, and the more complete one wins the tap.</p></div>
 <div class="leak"><div class="big">Website</div><h3>Your site does not book</h3><p>Slow pages on mobile, a buried phone number, no clear price or free consult offer, and a contact form that asks too much. Visitors leave and call the next practice.</p></div>
 </div>
 </div></section>
@@ -607,7 +645,7 @@ home_body = f'''
 <ol class="path">
 <li><span class="dot">1</span><h3>Search</h3><p class="lose">Not showing for treatment searches</p><p class="fix">Keyword map for braces, Invisalign, early treatment and your towns.</p></li>
 <li><span class="dot">2</span><h3>Map pack</h3><p class="lose">Ranked fourth or lower</p><p class="fix">Categories, services, citations and local signals tuned to your area.</p></li>
-<li><span class="dot">3</span><h3>Profile</h3><p class="lose">Profile loses the comparison</p><p class="fix">Photos, posts, Q&amp;A, offers and a steady review system.</p></li>
+<li><span class="dot">3</span><h3>Profile</h3><p class="lose">Profile loses the comparison</p><p class="fix">Photos, posts, services, offers and reviews.</p></li>
 <li><span class="dot">4</span><h3>Website</h3><p class="lose">Visitors bounce on mobile</p><p class="fix">Fast pages, clear offer, click to call and a short consult form.</p></li>
 <li><span class="dot">5</span><h3>Consult booked</h3><p class="lose">No idea which channel worked</p><p class="fix">Call tracking and form tracking so you see real new patient numbers.</p></li>
 </ol>
@@ -667,6 +705,7 @@ home_body = f'''
 <p class="small" style="color:#9FB0C6;margin:14px 0 0">Simple estimate: fee multiplied by extra starts. It does not include family referrals or retainer revenue.</p>
 </div>
 </div>
+<div class="cta-row" style="margin-top:28px"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a></div>
 </div></section>
 
 <section class="tint"><div class="wrap split">
@@ -742,16 +781,16 @@ HOME_JS = '''<script>
 })();
 </script>'''
 
-page("/", "Orthodontist SEO & Marketing Agency | " + CONFIG["brand"],
-     "Local SEO, Google Business Profile optimization and websites for orthodontists and endodontists in the US. Get more consult bookings from Google.",
+page("/", "Orthodontist Marketing & SEO Agency | " + CONFIG["brand"],
+     "Orthodontist marketing agency for local SEO, Google Business Profile and website conversion. One practice per market. Get a free practice audit in 2 days.",
      home_body,
      schema=[faq_schema(HOME_FAQ),
-             {"@type": "WebPage", "@id": S + "/#webpage", "url": S + "/", "name": "Orthodontist SEO and marketing agency",
+             {"@type": "WebPage", "@id": S + "/#webpage", "url": S + "/", "name": "Orthodontist marketing and SEO agency",
               "isPartOf": {"@id": S + "/#website"}, "about": {"@id": ORG_ID}}],
      script=HOME_JS)
 
 # ---------------------------------------------------------------- SERVICE PAGES
-def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note, faqs, related, stype, sname, img="office"):
+def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note, faqs, related, stype, sname, img="office", extra="", og="og-image.png"):
     incl_html = "".join(f'<li><h3>{h}</h3><p>{p}</p></li>' for h, p in incl)
     steps_html = "".join(f'<li><span class="when">{w}</span><h3>{h}</h3><p>{p}</p></li>' for w, h, p in steps)
     kw_html = "".join(f"<tr><td>{a}</td><td>{b}</td></tr>" for a, b in kw_rows)
@@ -772,6 +811,7 @@ def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note,
 <ul class="incl">{incl_html}</ul>
 <div class="side-note"><p>{note}</p></div>
 </div></section>
+{extra}
 <section class="tint"><div class="wrap">
 <h2>How it works</h2>
 <ol class="timeline">{steps_html}</ol>
@@ -789,7 +829,7 @@ def service_page(path, crumb, title, desc, h1, lede, incl, steps, kw_rows, note,
 </div></section>
 {cta_band()}
 '''
-    page(path, title, desc, body, schema=[service_schema(sname, desc, path, stype), faq_schema(faqs), crumbs_schema(trail)])
+    page(path, title, desc, body, schema=[service_schema(sname, desc, path, stype), faq_schema(faqs), crumbs_schema(trail)], og=og)
 
 REL = {
     "seo": ("/orthodontist-seo/", "Orthodontist SEO", "Rank for braces and Invisalign searches in your towns."),
@@ -800,9 +840,9 @@ REL = {
 
 service_page(
     "/orthodontist-seo/", "Orthodontist SEO",
-    "SEO for Orthodontists | Braces & Invisalign Rankings",
-    "Orthodontist SEO that gets your practice found for braces, Invisalign and early treatment searches in your area. Local SEO for US orthodontic practices.",
-    "SEO for orthodontists that fills your consult calendar.",
+    "Orthodontist SEO Services | " + CONFIG["brand"],
+    "Orthodontist SEO services for braces, Invisalign and early treatment searches: keyword map, treatment pages, map pack growth and call tracking. Free audit.",
+    "Orthodontist SEO services that fill your consult calendar.",
     "We get your practice ranking for the treatment searches parents and adults make before they book, in the towns you serve, and we track the calls and consult requests that come from it.",
     [("Keyword and location map", "We map searches for braces, Invisalign, clear aligners, early treatment and adult orthodontics to the right pages and towns."),
      ("Treatment pages that rank", "Detailed pages for each treatment you offer, written for patients and structured for Google, with costs, timelines and FAQs."),
@@ -825,23 +865,42 @@ service_page(
      ("Will you write the content?", "Yes. We write treatment and location pages for patients, then send them to you for a quick clinical accuracy check before publishing."),
      ("How do you report results?", "Every month you get calls from your Google profile, consult requests from your website, map rank grids for your main searches and a short summary of next steps.")],
     [REL["gbp"], REL["web"], REL["endo"]],
-    "Local SEO for orthodontic practices", "Orthodontist SEO", img="bracesmodel")
+    "Local SEO for orthodontic practices", "Orthodontist SEO", img="bracesmodel", og="og-orthodontist-seo.png",
+    extra=f'''<section class="tint"><div class="wrap extra-grid">
+<div>
+<h2>Why orthodontist SEO is different</h2>
+<p>General dental SEO treats every service the same. Orthodontics does not work that way.</p>
+<p><b>Each treatment needs its own page.</b> Braces, Invisalign and early treatment are searched by different people with different questions, so one services page cannot rank for all of them.</p>
+<p><b>Parents decide over several weeks.</b> They compare practices, read reviews and come back more than once, so your <a href="/google-business-profile-optimization/">Google Business Profile optimization</a> and your site have to answer cost, timing and first visit questions every time.</p>
+<p><b>Success is consult requests, not traffic.</b> We track calls and consult forms, and we fix the pages that get visits but no bookings, often as part of <a href="/orthodontic-website-design/">orthodontic website design</a> work.</p>
+</div>
+<div>
+<h2>What you get in the first 90 days</h2>
+<ul class="facts">
+<li>{ico("check")}<span><b>Keyword map</b> for your treatments and the towns you serve.</span></li>
+<li>{ico("check")}<span><b>Google profile rebuild</b>: categories, services, photos and review routine.</span></li>
+<li>{ico("check")}<span><b>Treatment pages</b> for braces, Invisalign and early treatment.</span></li>
+<li>{ico("check")}<span><b>Call tracking</b> and consult form tracking.</span></li>
+<li>{ico("check")}<span><b>Your first monthly report</b> on calls, consult requests and map positions.</span></li>
+</ul>
+</div>
+</div></section>''')
 
 service_page(
     "/google-business-profile-optimization/", "Google Business Profile optimization",
-    "Google Business Profile Optimization for Orthodontists",
-    "Google Business Profile (GMB) optimization for orthodontists and endodontists. Rank in the map pack, earn more reviews and turn views into calls.",
+    "Orthodontist Google Business Profile Optimization",
+    "Google Business Profile optimization for orthodontists: categories, services, photos, reviews and map rank tracking to win the local pack. Get a free audit.",
     "Google Business Profile optimization for orthodontic practices.",
     "Your Google Business Profile is often the first thing a new patient sees. We optimize it to rank in the top three of the map pack and to win the comparison against the practices next to you.",
     [("Category and service setup", "Primary and secondary categories, every treatment listed as a service with a clear description, and the right service area."),
      ("Photos and videos", "A photo plan for your team, office, technology and smiles, uploaded on a steady schedule that keeps the profile active."),
      ("Weekly posts and offers", "Posts about free consults, aligner promotions, community events and new technology to keep the profile fresh."),
      ("Review system", "A simple routine and message templates your front desk can use, plus replies to reviews written in your voice."),
-     ("Questions and answers", "Seeded and answered questions about cost, insurance, payment plans and first visits, so patients get answers before they call."),
+     ("Accurate answers about your practice", "Complete services, attributes and descriptions, plus review replies, so the answers Google gives about your practice are accurate. Google has retired public Q&A and now uses Ask Maps."),
      ("Map rank tracking", "Grid based rank tracking across your service area so you see exactly where you appear in the top three and where you do not.")],
     [("Week 1", "Profile audit", "Benchmark against your top three competitors and run a map rank grid for your main searches."),
      ("Weeks 2 to 3", "Optimize", "Fix categories, services, descriptions, hours, links, photos and attributes."),
-     ("Month 2", "Activate", "Start the posting schedule, review routine and Q&A, and clean up citations."),
+     ("Month 2", "Activate", "Start the posting schedule and review routine, complete attributes and clean up citations."),
      ("Ongoing", "Maintain and grow", "Monthly posts, photos, review replies and rank grid reporting.")],
     [("Map pack searches", "orthodontist near me, braces near me, Invisalign provider near me"),
      ("Branded searches", "your practice name, your doctor's name, practice name reviews"),
@@ -853,16 +912,29 @@ service_page(
      ("Will you post fake reviews?", "Never. Fake reviews break Google's rules and can get your profile suspended. We help you ask real patients at the right moment, which works better anyway."),
      ("Do you need ownership of our profile?", "No. We request manager access. Your practice always stays the primary owner.")],
     [REL["seo"], REL["web"], REL["endo"]],
-    "Google Business Profile optimization", "Google Business Profile optimization for orthodontists", img="consult")
+    "Google Business Profile optimization", "Google Business Profile optimization for orthodontists", img="consult", og="og-google-business-profile.png",
+    extra=f'''<section class="tint"><div class="wrap">
+<h2>What a complete orthodontist profile has</h2>
+<p class="lede">Whether you call it your Google Business Profile or still call it GMB, this is the checklist we work from.</p>
+<ul class="ticks">
+<li><b>Primary category</b> set to Orthodontist, with only relevant secondary categories</li>
+<li><b>Every treatment as a service</b>: braces, Invisalign, clear aligners, early treatment and more</li>
+<li><b>A clear description</b> of who you treat, where and what makes you different</li>
+<li><b>Accurate hours</b>, including holiday and extended hours</li>
+<li><b>Real photos</b> of your team, office, technology and smiles</li>
+<li><b>Weekly posts</b> about consults, offers and practice news</li>
+<li><b>Tagged website links</b> so calls and visits from the profile show up in your reports</li>
+</ul>
+</div></section>''')
 
 service_page(
     "/orthodontic-website-design/", "Orthodontic website design",
     "Orthodontic Website Design & Redesign | " + CONFIG["brand"],
-    "Orthodontic website design built for SEO and conversions. Fast, mobile first orthodontist websites that turn visitors into booked consultations.",
+    "Orthodontic website design built for SEO and bookings: fast mobile pages, click to call, schema and redirect maps that protect rankings. Launch in 4 to 6 weeks.",
     "Orthodontic websites designed to book consultations.",
     "A modern, fast website that looks like the quality of care you provide, and is built by a conversion specialist so every page moves visitors toward a free consult.",
     [("Conversion-first structure", "Clear free consult offer, click to call on every page, transparent cost and payment plan information and a short booking form."),
-     ("Fast on mobile", "Most visitors are on a phone. We build for fast load times and strong Core Web Vitals so Google and patients both stay happy."),
+     ("Fast on mobile", "Most visitors are on a phone. We build to Google's good Core Web Vitals thresholds and test on a mid range phone."),
      ("SEO built in", "Clean page structure, treatment and location pages, schema markup for your practice and doctors, and redirects that protect existing rankings."),
      ("Doctor and team pages", "Pages that build trust with credentials, real photos and the personality of your team."),
      ("Smile gallery and reviews", "Before and after galleries and review highlights placed where they help people decide."),
@@ -881,13 +953,26 @@ service_page(
      ("Can we keep our current domain and branding?", "Yes. We can work with your existing brand or refresh it as part of the project."),
      ("Is the contact form HIPAA safe?", "Our consult forms only collect contact details and the treatment of interest. If you need intake forms with health information, we connect a HIPAA compliant form provider.")],
     [REL["seo"], REL["gbp"], REL["endo"]],
-    "Website design for orthodontic practices", "Orthodontic website design", img="office")
+    "Website design for orthodontic practices", "Orthodontic website design", img="office", og="og-orthodontic-website-design.png",
+    extra=f'''<section class="tint"><div class="wrap">
+<h2>Pages every orthodontic site needs</h2>
+<p class="lede">The structure we start from, adjusted to the treatments and locations you actually offer.</p>
+<ul class="ticks">
+<li><b>Home</b> with a clear free consult offer and click to call</li>
+<li><b>One page per treatment</b>: braces, Invisalign, clear aligners, early treatment</li>
+<li><b>Cost and insurance</b>, including payment plans</li>
+<li><b>Meet the team</b> with doctor credentials and real photos</li>
+<li><b>Reviews</b> and before and after results</li>
+<li><b>Each office</b> with its own location page</li>
+<li><b>First visit guide</b> so new patients know what to expect</li>
+</ul>
+</div></section>''')
 
 service_page(
     "/endodontist-marketing/", "Endodontist marketing",
-    "Endodontist Marketing & SEO | " + CONFIG["brand"],
-    "Marketing and SEO for endodontists. Rank for urgent root canal and emergency endodontist searches and make it easy for referring dentists to send patients.",
-    "Marketing for endodontists, built around urgent searches and referrals.",
+    "Endodontist SEO & Marketing | " + CONFIG["brand"],
+    "Endodontist marketing and SEO for urgent root canal searches and referral growth: map pack visibility, same day call paths and a referral form. Free audit.",
+    "Endodontist marketing and SEO built around urgent searches and referrals.",
     "Endodontic patients search when they are in pain and want an answer today. Referring dentists want a practice that is easy to work with. We help you win both.",
     [("Urgent search visibility", "Rank for root canal, tooth pain and emergency endodontist searches in your area, especially in the map pack."),
      ("Same day call paths", "Click to call, clear hours and same day appointment messaging so patients in pain call you first."),
@@ -907,9 +992,22 @@ service_page(
     [("Is SEO worth it for endodontists if most patients are referred?", "Yes. Patients often search your name after a referral, and many search for root canal help directly. A strong profile and site support both routes."),
      ("Can you build a referral form for dentists?", "Yes. We build a simple online referral form and can connect it to a HIPAA compliant provider when it includes patient details."),
      ("Do you work with multi-location endodontic groups?", "Yes. Each location gets its own profile optimization, location page and tracking."),
-     ("How do you measure results?", "Calls from Google, website referral submissions, appointment requests and map pack positions for your urgent searches.")],
+     ("How do you measure results?", "Calls from Google, website referral submissions, appointment requests and map pack positions for your urgent searches."),
+     ("Does emergency endodontist SEO work if we do not take walk ins?", "Yes. Most people searching for an emergency endodontist want to be seen quickly, not to walk in. We write your pages and Google profile around your real policy, whether that is same day or next day appointments, so callers know what to expect and the right patients call.")],
     [REL["gbp"], REL["seo"], REL["web"]],
-    "Endodontist marketing and local SEO", "Endodontist marketing", img="endo")
+    "Endodontist marketing and local SEO", "Endodontist marketing", img="endo", og="og-endodontist-marketing.png",
+    extra=f'''<section class="tint"><div class="wrap extra-grid">
+<div>
+<h2>Built for referring dentists</h2>
+<p>Referring offices choose the endodontist who is easiest to work with. We build a referral section on your site that makes sending a patient take a minute, and we keep your <a href="/google-business-profile-optimization/">Google Business Profile</a> in line with it so dentists and patients see the same information.</p>
+</div>
+<ul class="facts">
+<li>{ico("check")}<span><b>Online referral form</b> that a front desk can fill in quickly.</span></li>
+<li>{ico("check")}<span><b>What to send</b>: radiographs, notes and urgency, listed clearly.</span></li>
+<li>{ico("check")}<span><b>Your response time</b>, stated plainly so offices know when to expect a call.</span></li>
+<li>{ico("check")}<span><b>How you report back</b> to the referring dentist after treatment.</span></li>
+</ul>
+</div></section>''')
 
 # ---------------------------------------------------------------- ABOUT
 about_trail = [("Home", "/"), ("About", "/about/")]
@@ -917,15 +1015,15 @@ about_body = f'''
 <section class="page-hero"><div class="wrap split">
 <div>
 {crumbs_html(about_trail)}
-<h1>A small specialist team that cares about your numbers.</h1>
-<p class="lede">{CONFIG["brand"]} helps orthodontists and endodontists get more new patients from Google. We are deliberately small and deliberately focused, so you work directly with the person doing the work.</p>
+<h1>Meet {CONFIG["founder"]}, the specialist behind {CONFIG["brand"]}</h1>
+<p class="lede">{CONFIG["brand"]} is a small team that helps orthodontists and endodontists get more new patients from Google. We are deliberately small and focused, so you work directly with the specialist doing the work.</p>
 <div class="cta-row"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a></div>
 </div>
 <div class="portrait"><!-- Swap for your own photo: <img src="/muhammad.jpg" alt="{CONFIG["founder"]}, founder of {CONFIG["brand"]}" width="800" height="1000"> -->{P("room", w=800, h=1000, eager=True)}</div>
 </div></section>
 <section><div class="wrap split">
 <div>
-<h2>Meet {CONFIG["founder"]}</h2>
+<h2>About {CONFIG["founder"]}</h2>
 <p>Muhammad has been building and optimizing websites since 2014. He spent a year delivering SEO and Google Business Profile optimization for dental practices through a marketing agency, and has worked as a conversion rate optimization specialist for e-commerce, SaaS and service businesses in the US and Europe.</p>
 <p>He has designed and built websites for US orthodontic practices, run A/B tests in VWO and Intelligems, built landing pages in Instapage and Unbounce, and has been Top Rated on Upwork since 2018, including work for healthcare clients.</p>
 <p>He started {CONFIG["brand"]} to give specialist practices something most dental marketing companies do not: rankings and conversion handled by the same person, with honest reporting on what actually brings in patients.</p>
@@ -938,14 +1036,14 @@ about_body = f'''
 <li>{ico("check")}<span><b>No fake reviews or shortcuts.</b> Nothing that puts your Google profile at risk.</span></li>
 <li>{ico("check")}<span><b>Patient privacy first.</b> No health information in forms, analytics or ad platforms.</span></li>
 <li>{ico("check")}<span><b>Month to month after 90 days.</b> Results should be the reason you stay.</span></li>
-<li>{ico("check")}<span><b>US business hours.</b> A remote team that answers email the same day.</span></li>
+<li>{ico("check")}<span><b>US business hours.</b> A small team that answers email the same day, with offices in Austin and London.</span></li>
 </ul>
 </div>
 </div></section>
 {cta_band()}
 '''
 page("/about/", "About " + CONFIG["brand"] + " | Dental Marketing for Specialists",
-     "Meet the team behind " + CONFIG["brand"] + ", a dental marketing agency focused on SEO, Google Business Profile and websites for orthodontists and endodontists.",
+     "Meet " + CONFIG["founder"] + ", the specialist behind " + CONFIG["brand"] + ": local SEO, Google Business Profile and conversion work for orthodontists and endodontists.",
      about_body, schema=[crumbs_schema(about_trail),
                          {"@type": "AboutPage", "url": S + "/about/", "about": {"@id": ORG_ID}}])
 
@@ -970,20 +1068,27 @@ audit_body = f'''
 {FORM_ERR}
 <input type="hidden" name="form_type" value="audit">
 <input type="text" name="company_fax" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<ol class="steps3">
+<li><span>Send your practice website below.</span></li>
+<li><span>Receive a recorded audit within 2 business days.</span></li>
+<li><span>Get an action list, with no obligation.</span></li>
+</ol>
 <div class="row2">
 <div class="f"><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div>
-<div class="f"><label for="role">Your role</label><select id="role" name="role"><option>Doctor or owner</option><option>Office or practice manager</option><option>Marketing lead</option><option>Other</option></select></div>
+<div class="f"><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
 </div>
-<div class="f"><label for="practice">Practice name</label><input id="practice" name="practice" required autocomplete="organization"></div>
 <div class="row2">
-<div class="f"><label for="website">Website</label><input id="website" name="website" type="url" placeholder="https://" required></div>
+<div class="f"><label for="website">Practice website</label><input id="website" name="website" type="url" placeholder="https://" required></div>
 <div class="f"><label for="city">City and state</label><input id="city" name="city" required placeholder="Austin, TX"></div>
 </div>
 <div class="row2">
-<div class="f"><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
 <div class="f"><label for="phone">Phone <span class="opt">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+<div class="f"><label for="role">Your role <span class="opt">(optional)</span></label><select id="role" name="role"><option value="">Select</option><option>Doctor or owner</option><option>Office or practice manager</option><option>Marketing lead</option><option>Other</option></select></div>
 </div>
-<div class="f"><label for="specialty">Specialty</label><select id="specialty" name="specialty"><option>Orthodontics</option><option>Endodontics</option><option>Pediatric dentistry</option><option>Other specialty</option></select></div>
+<div class="row2">
+<div class="f"><label for="practice">Practice name <span class="opt">(optional)</span></label><input id="practice" name="practice" autocomplete="organization"></div>
+<div class="f"><label for="specialty">Specialty</label><select id="specialty" name="specialty"><option>Orthodontics</option><option>Endodontics</option></select></div>
+</div>
 <div class="f"><label for="goal">What would you most like to improve? <span class="opt">(optional)</span></label><textarea id="goal" name="goal" rows="3" placeholder="For example: more Invisalign consults, ranking in a new town"></textarea></div>
 <button class="btn btn-primary" type="submit">Send me my free audit</button>
 <p class="privacy-line">We only use these details to prepare your audit. Please do not include any patient information.</p>
@@ -1011,8 +1116,9 @@ contact_body = f'''
 <li>{ico("clock")}<span><b>Reply within one business day</b>We work US business hours, Eastern to Pacific.</span></li>
 <li>{ico("shield")}<span><b>No patient information, please</b>Keep messages to your practice and marketing questions.</span></li>
 <li>{ico("chart")}<span><b>Want numbers first?</b><a href="/free-audit/">Request the free practice audit</a> instead.</span></li>
-<li>{ico("pin")}<span><b>Email us directly</b><a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a></span></li>
+<li>{ico("pin")}<span><b>Email us directly</b><a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>{(' or <a href="' + CONFIG["scheduler"] + '" rel="noopener">book a 20 minute call</a>') if CONFIG["scheduler"] else ""}</span></li>
 </ul>
+<div class="offices-inline">{"".join(office_html(o) for o in OFFICES)}</div>
 </div>
 <form class="card" action="/api/lead" method="POST">
 {FORM_ERR}
@@ -1044,15 +1150,16 @@ page("/thank-you/", "Thank you | " + CONFIG["brand"], "Your request has been rec
      f'''<section class="page-hero" style="border:0"><div class="wrap"><h1 id="tyH">Your audit request is in.</h1>
 <p class="lede" id="tyP">We will send your recorded audit to your email within 2 business days. If you have a question in the meantime, email <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>.</p>
 <div class="cta-row"><a class="btn btn-ghost" href="/">Back to the homepage</a></div></div></section>''', noindex=True,
-     script="""<script>if(new URLSearchParams(location.search).get('form')==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}</script>""")
+     script="""<script>(function(){var q=new URLSearchParams(location.search).get('form');if(q&&typeof gtag==='function'){gtag('event','generate_lead',{form_id:q==='contact'?'contact':'free_audit',method:'website_form'});history.replaceState(null,'',location.pathname);}})();</script><script>if(new URLSearchParams(location.search).get('form')==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}</script>""")
 
 page("/privacy-policy/", "Privacy Policy | " + CONFIG["brand"], "How " + CONFIG["brand"] + " collects and uses information submitted through this website.",
      f'''<section><div class="wrap prose"><h1>Privacy policy</h1><p class="small">Last updated {TODAY}</p>
-<p>This policy explains how {CONFIG["brand"]} handles information you share through this website.</p>
+<p>This policy explains how {CONFIG["brand"]} handles information you share through this website. {CONFIG["brand"]} is a dental marketing agency based in the United States (Austin, Texas), with an office in London, United Kingdom.</p>
 <h2>Information we collect</h2><p>When you request an audit or contact us, we collect the details you enter, such as your name, practice name, website, location, email address and phone number. We do not ask for, and you should not submit, any patient or health information.</p>
 <h2>How we use it</h2><p>We use your details to prepare your audit, reply to you and, if you become a client, to deliver our services. We do not sell your information.</p>
-<h2>Service providers</h2><p>Form submissions are stored securely on our hosting provider (Cloudflare) and delivered to our email. Basic, privacy friendly website analytics may be used to understand how visitors use the site.</p>
-<h2>Your choices</h2><p>You can ask us to access, correct or delete your information at any time by emailing <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>.</p>
+<h2>Service providers</h2><p>Form submissions are stored securely on our hosting provider (Cloudflare) and delivered to our email. We use Google Analytics 4 and Cloudflare Web Analytics to understand how visitors use the site. Google Analytics may set cookies. You can block them in your browser or use Google's opt out add on.</p>
+<h2>Your rights</h2><p>Email <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a> to access, correct or delete your information. We do not sell personal information.</p>
+<h2>Contact</h2>{"".join(office_html(o) for o in OFFICES)}
 </div></section>''')
 
 page("/404.html", "Page not found | " + CONFIG["brand"], "This page could not be found.",
@@ -1080,7 +1187,11 @@ open(os.path.join(OUT, "_headers"), "w").write("""/*
 
 /favicon.svg
   Cache-Control: public, max-age=604800
-/og-image.png
+/og-*.png
+  Cache-Control: public, max-age=604800
+/favicon.ico
+  Cache-Control: public, max-age=604800
+/apple-touch-icon.png
   Cache-Control: public, max-age=604800
 """)
 # redirect www and old GMB-style URL to canonical paths
@@ -1089,25 +1200,46 @@ open(os.path.join(OUT, "_redirects"), "w").write(
     "/gmb-optimization /google-business-profile-optimization/ 301\n/website-design /orthodontic-website-design/ 301\n"
     "/contact-us /contact/ 301\n/audit /free-audit/ 301\n")
 
-# OG image
+# OG images and icons (Pillow)
 try:
     from PIL import Image, ImageDraw, ImageFont
-    W, H = 1200, 630
-    im = Image.new("RGB", (W, H), "#0E2240")
-    d = ImageDraw.Draw(im)
     fb = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     fr = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    d.rounded_rectangle([80, 80, 160, 160], 20, fill="#14305A")
-    d.line([(98, 104), (120, 124), (142, 104)], fill="#2BB3A8", width=8, joint="curve")
-    d.line([(98, 128), (120, 148), (142, 128)], fill="#F2A93B", width=8, joint="curve")
-    d.text((185, 100), CONFIG["brand"], font=ImageFont.truetype(fb, 40), fill="white")
-    y = 230
-    for line in ["More consult bookings for", "orthodontic practices,", "straight from Google."]:
-        d.text((80, y), line, font=ImageFont.truetype(fb, 64), fill="white"); y += 80
-    d.rectangle([80, 500, 1120, 503], fill="#F2A93B")
-    d.text((80, 525), "Orthodontist SEO  |  Google Business Profile  |  Website design", font=ImageFont.truetype(fr, 30), fill="#C9D5E4")
-    im.save(os.path.join(OUT, "og-image.png"), optimize=True)
+
+    def mark(size):
+        """Logo mark: navy rounded square with teal and saffron chevrons, drawn at 4x then downscaled."""
+        k = 4; z = size * k
+        im = Image.new("RGBA", (z, z), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+        u = z / 40
+        d.rounded_rectangle([0, 0, z - 1, z - 1], int(10 * u), fill="#0E2240")
+        w = max(1, int(3.4 * u))
+        d.line([(11*u, 12*u), (20*u, 20*u), (29*u, 12*u)], fill="#2BB3A8", width=w, joint="curve")
+        d.line([(11*u, 21*u), (20*u, 29*u), (29*u, 21*u)], fill="#F2A93B", width=w, joint="curve")
+        return im.resize((size, size), Image.LANCZOS)
+
+    def og(fname, lines, foot="Orthodontist SEO  |  Google Business Profile  |  Website design"):
+        W, H = 1200, 630
+        im = Image.new("RGB", (W, H), "#0E2240"); d = ImageDraw.Draw(im)
+        im.paste(mark(80), (80, 80), mark(80))
+        d.text((185, 100), CONFIG["brand"], font=ImageFont.truetype(fb, 40), fill="white")
+        y = 230
+        for line in lines:
+            d.text((80, y), line, font=ImageFont.truetype(fb, 64), fill="white"); y += 80
+        d.rectangle([80, 500, 1120, 503], fill="#F2A93B")
+        d.text((80, 525), foot, font=ImageFont.truetype(fr, 30), fill="#C9D5E4")
+        im.save(os.path.join(OUT, fname), optimize=True)
+
+    og("og-image.png", ["Orthodontist marketing that", "books more consults", "straight from Google."])
+    og("og-orthodontist-seo.png", ["Orthodontist SEO services", "that fill your", "consult calendar."], "Braces  |  Invisalign  |  Early treatment  |  Map pack")
+    og("og-google-business-profile.png", ["Google Business Profile", "optimization for", "orthodontists."], "Categories  |  Services  |  Photos  |  Reviews  |  Rank tracking")
+    og("og-orthodontic-website-design.png", ["Orthodontic websites", "designed to book", "consultations."], "Fast mobile pages  |  Click to call  |  SEO built in")
+    og("og-endodontist-marketing.png", ["Endodontist marketing", "built around urgent", "searches and referrals."], "Root canal searches  |  Same day calls  |  Referral form")
+
+    big = mark(512); big.save(os.path.join(OUT, "logo-512.png"), optimize=True)
+    tc = Image.new("RGB", (180, 180), "#0E2240"); tc.paste(mark(180), (0, 0), mark(180))
+    tc.save(os.path.join(OUT, "apple-touch-icon.png"), optimize=True)
+    mark(64).save(os.path.join(OUT, "favicon.ico"), sizes=[(16, 16), (32, 32), (48, 48)])
 except Exception as e:
-    print("OG image skipped:", e)
+    print("Images skipped:", e)
 
 print("Built", OUT)

@@ -7,7 +7,7 @@ const FIELDS = {
   contact: ["name", "email", "phone", "practice", "topic", "message"],
 };
 const REQUIRED = {
-  audit: ["name", "practice", "website", "city", "email"],
+  audit: ["name", "website", "city", "email"],
   contact: ["name", "email", "message"],
 };
 
