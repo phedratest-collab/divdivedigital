@@ -98,7 +98,17 @@ async function handleLead(request, env, ctx) {
     console.error("KV save failed", e);
     return back(request, formPage, { error: "server" });
   }
-  ctx.waitUntil(sendEmail(env, lead).catch((e) => console.error("Email failed", e)));
+  ctx.waitUntil((async () => {
+    let status;
+    try { status = await sendEmail(env, lead); }
+    catch (e) { status = "error: " + String(e && e.message || e).slice(0, 500); }
+    console.log(`Lead ${lead.id} email: ${status} (resend key ${env.RESEND_API_KEY ? "present" : "MISSING"}, to ${env.LEAD_TO})`);
+    try {
+      await env.LEADS.put(`lead:${lead.id}`, JSON.stringify({ ...lead, email_status: status }), {
+        metadata: { type, name: lead.name, email: lead.email, practice: lead.practice || "", email_status: status.slice(0, 200) },
+      });
+    } catch {}
+  })());
   return back(request, "/thank-you/", { form: type });
 }
 
