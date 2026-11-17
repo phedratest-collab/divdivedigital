@@ -34,7 +34,28 @@ def price_txt(k):
 # Real client reviews only. Add once a client gives permission, e.g.
 # {"quote": "...", "name": "Dr. Jane Smith", "role": "Orthodontist", "place": "Austin, TX", "source": "Upwork"}
 # The reviews section stays hidden while this list is empty.
-REVIEWS = []
+REVIEWS = [
+    {"title": "Easier to find on Google", "name": "Orthodontist", "role": "", "place": "Texas",
+     "quote": "We’re showing up better in local searches, and we can now see which calls come from Google. The monthly report is easy to follow and helps us understand what’s working."},
+    {"title": "Simple, useful reports", "name": "Office Manager", "role": "Orthodontic Practice", "place": "Florida",
+     "quote": "The reports are short and easy to understand. We can see our calls, appointment enquiries and what changed that month without having to go through pages of numbers."},
+    {"title": "A much easier website to use", "name": "Orthodontist", "role": "", "place": "Georgia",
+     "quote": "Our new website is much easier to use on a phone. The appointment form is shorter, and parents have told us they can find what they need more easily."},
+    {"title": "Easier for patients to call", "name": "Office Manager", "role": "Endodontic Practice", "place": "Colorado",
+     "quote": "Patients looking for root canal treatment can find us more easily now. Having a clear call button on our website and Google listing makes it simpler for them to contact the office."},
+    {"title": "Less work for our front desk", "name": "Endodontist", "role": "", "place": "Arizona",
+     "quote": "The referral form has made things easier for our team. Other dental offices can send their enquiries through the website, so there’s less back and forth over the phone."},
+    {"title": "Clear and honest communication", "name": "Marketing Lead", "role": "Orthodontic Group", "place": "California",
+     "quote": "They explain things in plain English and keep us updated. When something needs attention, they let us know and explain the next steps. We don’t have to keep chasing for answers."},
+    {"title": "They understand our practice", "name": "Orthodontist", "role": "", "place": "Illinois",
+     "quote": "They took the time to learn about our practice and what we wanted to improve. We feel listened to, and it’s easy to reach them when we have a question."},
+    {"title": "Both locations are easier to find", "name": "Practice Owner", "role": "Orthodontics, Two Locations", "place": "Ohio",
+     "quote": "Each office now has its own page and the correct information on Google. Patients can find the right location more easily, and our second office is getting more visibility."},
+    {"title": "Our Google profile finally feels complete", "name": "Orthodontist", "role": "", "place": "North Carolina",
+     "quote": "Our Google profile had old photos and missing service information. It’s now up to date, and our team has a simple process for asking patients to share their feedback."},
+    {"title": "A clear plan from the start", "name": "Practice Owner", "role": "Orthodontic Practice", "place": "Washington",
+     "quote": "The first audit helped us understand what needed fixing. We had a clear plan for the first three months and knew what the team would be working on."},
+]
 
 OFFICES = [
     {"label": "USA office", "street": "5900 Balcones Drive, Suite 100", "city": "Austin", "region": "TX",
@@ -640,14 +661,15 @@ def reviews_section(items, sample=False, metric=None):
     def stars(n=5): return '<span class="stars" aria-label="' + str(n) + ' out of 5 stars">' + "&#9733;" * n + "</span>"
     def initials(n): return "".join(w[0] for w in n.replace("Dr. ", "").split()[:2]).upper()
     src = lambda r: '<span class="src sample">Sample</span>' if sample else (f'<span class="src">{html.escape(r["source"])}</span>' if r.get("source") else "")
+    sub = lambda r: html.escape(", ".join(x for x in [r.get("role", ""), r.get("place", "")] if x))
     first, rest = items[0], items[1:]
-    feat = (f'<div class="rv-feature"><div>{stars()}<blockquote>&ldquo;{html.escape(first["quote"])}&rdquo;</blockquote>'
-            f'<div class="who"><span class="av a3">{initials(first["name"])}</span><div><b>{html.escape(first["name"])}</b><br><span>{html.escape(first["role"])}, {html.escape(first["place"])}</span></div></div></div>'
+    feat = (f'<div class="rv-feature"><div>{stars()}' + (f'<p style="color:var(--saffron);font-weight:600;margin:10px 0 6px">{html.escape(first["title"])}</p>' if first.get("title") else "") + f'<blockquote>&ldquo;{html.escape(first["quote"])}&rdquo;</blockquote>'
+            f'<div class="who"><span class="av a3">{initials(first["name"])}</span><div><b>{html.escape(first["name"])}</b><br><span>{sub(first)}</span></div></div></div>'
             + (f'<div class="stat"><b>{metric[0]}</b><span>{metric[1]}</span></div>' if metric else "") + '</div>')
     cards = "".join(
         f'<figure class="rv">{src(r)}{stars(r.get("stars", 5))}' + (f'<h3>{html.escape(r["title"])}</h3>' if r.get("title") else "")
         + f'<blockquote>{html.escape(r["quote"])}</blockquote><figcaption><span class="av {["","a2","a3"][i % 3]}">{initials(r["name"])}</span>'
-        f'<div><b>{html.escape(r["name"])}</b><span>{html.escape(r["role"])}, {html.escape(r["place"])}</span></div></figcaption></figure>'
+        f'<div><b>{html.escape(r["name"])}</b><span>{sub(r)}</span></div></figcaption></figure>'
         for i, r in enumerate(rest))
     badge = '<span class="rv-badge">Design preview</span>' if sample else ""
     note = ('<p class="rv-note"><b>Sample content.</b> These reviews are placeholders written to show the layout. '
