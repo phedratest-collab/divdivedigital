@@ -23,25 +23,46 @@ function back(request, path, params) {
 }
 
 async function sendEmail(env, lead) {
-  if (!env.LEAD_EMAIL || !env.LEAD_FROM || !env.LEAD_TO) return "skipped";
-  const { EmailMessage } = await import("cloudflare:email");
+  const from = env.LEAD_FROM, to = env.LEAD_TO;
+  if (!from || !to) return "skipped";
   const subject = lead.type === "audit"
-    ? `New free audit request: ${lead.practice || lead.name}`
+    ? `New free audit request: ${lead.practice || lead.website || lead.name}`
     : `New contact message: ${lead.name}`;
-  const body = Object.entries(lead).map(([k, v]) => `${k}: ${v}`).join("\n");
+  const body = Object.entries(lead).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join("\n");
+
+  // Preferred: Resend API (set RESEND_API_KEY as a secret on this Worker).
+  if (env.RESEND_API_KEY) {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: `Dive Dive Digital Website <${from}>`,
+        to: [to],
+        reply_to: lead.email,
+        subject,
+        text: body,
+      }),
+    });
+    if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+    return "sent";
+  }
+
+  // Fallback: Cloudflare send_email binding (only if configured in wrangler.jsonc).
+  if (!env.LEAD_EMAIL) return "skipped";
+  const { EmailMessage } = await import("cloudflare:email");
   const raw = [
-    `From: Dive Dive Digital Website <${env.LEAD_FROM}>`,
-    `To: ${env.LEAD_TO}`,
+    `From: Dive Dive Digital Website <${from}>`,
+    `To: ${to}`,
     `Reply-To: ${lead.email}`,
     `Subject: ${subject}`,
-    `Message-ID: <${lead.id}@${env.LEAD_FROM.split("@")[1]}>`,
+    `Message-ID: <${lead.id}@${from.split("@")[1]}>`,
     `Date: ${new Date().toUTCString()}`,
     "MIME-Version: 1.0",
     "Content-Type: text/plain; charset=utf-8",
     "",
     body,
   ].join("\r\n");
-  await env.LEAD_EMAIL.send(new EmailMessage(env.LEAD_FROM, env.LEAD_TO, raw));
+  await env.LEAD_EMAIL.send(new EmailMessage(from, to, raw));
   return "sent";
 }
 

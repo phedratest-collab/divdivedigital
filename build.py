@@ -14,7 +14,7 @@ OUT = os.path.join(HERE, "site")
 CONFIG = {
     "site_url": "https://divdivedigital.com",          # change if your domain differs
     "brand": "Dive Dive Digital",
-    "email": "hello@divdivedigital.com",               # set up this mailbox (or change it)
+    "email": "info@divdivedigital.com",                # main business inbox (Mailflare)
     "booking_url": "/free-audit/",                       # swap for your Calendly / Cal.com link later
     "founder": "Muhammad Afzal",
     "linkedin": "",                                      # optional, e.g. https://www.linkedin.com/in/...

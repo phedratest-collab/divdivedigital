@@ -14,10 +14,11 @@
   "kv_namespaces": [
     { "binding": "LEADS", "id": "84cb07b062744cc5bf34787771b2a3f6" }
   ],
-  // Email alerts (optional). Turn on Cloudflare Email Routing for divdivedigital.com,
-  // verify your Gmail as a destination address, then uncomment this block and push.
-  // "send_email": [{ "name": "LEAD_EMAIL", "destination_address": "YOUR_VERIFIED_GMAIL" }],
-  // "vars": { "LEAD_FROM": "website@divdivedigital.com", "LEAD_TO": "YOUR_VERIFIED_GMAIL" },
+  // Lead alerts: forms email LEAD_TO via Resend. Add the secret RESEND_API_KEY
+  // in Cloudflare (Workers > divdivedigital > Settings > Variables and Secrets).
+  "vars": { "LEAD_FROM": "website@divdivedigital.com", "LEAD_TO": "info@divdivedigital.com" },
+  // Optional Cloudflare fallback instead of Resend:
+  // "send_email": [{ "name": "LEAD_EMAIL", "destination_address": "info@divdivedigital.com" }],
   "routes": [
     { "pattern": "divdivedigital.com", "custom_domain": true },
     { "pattern": "www.divdivedigital.com", "custom_domain": true }
