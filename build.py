@@ -840,6 +840,16 @@ home_body = f'''
 
 HOME_JS = '''<script>
 (function(){
+  if(new URLSearchParams(location.search).get('preview')==='reviews' && !document.getElementById('reviews')){
+    fetch('/reviews-preview/').then(function(r){return r.text();}).then(function(t){
+      var sec=new DOMParser().parseFromString(t,'text/html').getElementById('reviews');
+      var anchor=document.getElementById('pricing');
+      if(sec&&anchor){anchor.after(document.importNode(sec,true));
+        if(location.hash==='#reviews'){document.getElementById('reviews').scrollIntoView();}}
+    });
+  }
+})();
+(function(){
   var pack=document.getElementById('pack');
   if(pack){
     var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
