@@ -341,9 +341,31 @@ form .btn[disabled]{opacity:.7;cursor:wait}
 .prices .amt{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--ink);margin:2px 0 10px}
 .prices p{font-size:.95rem;flex:1}
 @media (max-width:1000px){.prices{grid-template-columns:1fr 1fr}}@media (max-width:560px){.prices{grid-template-columns:1fr}}
-.reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:30px}
-.reviews figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px}
-.reviews blockquote{margin:0 0 14px;font-size:1.02rem;color:var(--ink-2)}
+.rv-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+.rv-head .lede{margin:0}
+.rv-badge{display:inline-block;background:var(--saffron);color:var(--ink);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;margin-bottom:14px}
+.rv-note{background:#fff;border:1px dashed var(--saffron-d);border-radius:12px;padding:12px 16px;font-size:.92rem;color:var(--ink-2);margin:22px 0 0}
+.rv-feature{margin:34px 0 18px;background:var(--ink);color:#DCE6F2;border-radius:20px;padding:40px 44px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.rv-feature blockquote{margin:0;font-family:var(--display);font-size:clamp(1.3rem,2.2vw,1.75rem);line-height:1.3;color:#fff;font-weight:600;letter-spacing:-.01em}
+.rv-feature .who{display:flex;align-items:center;gap:14px;margin-top:22px}
+.rv-feature .who b{color:#fff}.rv-feature .who span{color:#9FB0C6;font-size:.92rem}
+.rv-feature .stat{text-align:center;border-left:1px solid #2A3C58;padding-left:32px}
+.rv-feature .stat b{display:block;font-family:var(--display);font-size:2.6rem;color:var(--saffron);line-height:1}
+.rv-feature .stat span{font-size:.88rem;color:#9FB0C6}
+.reviews{columns:3 300px;column-gap:18px}
+.rv{break-inside:avoid;margin:0 0 18px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px 24px 20px;position:relative}
+.rv .stars{color:var(--star);letter-spacing:2px;font-size:1rem}
+.rv h3{font-size:1.05rem;margin:10px 0 6px}
+.rv blockquote{margin:0 0 18px;font-size:.98rem;line-height:1.6;color:var(--ink-2)}
+.rv figcaption{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.9rem;color:#fff;background:var(--teal);flex:none}
+.av.a2{background:var(--ink)}.av.a3{background:var(--saffron-d)}
+.rv figcaption b{display:block;color:var(--ink);font-size:.95rem;line-height:1.3}
+.rv figcaption span{font-size:.85rem;color:var(--muted)}
+.rv figcaption .av,.rv-feature .who .av{color:#fff;font-size:.9rem}
+.rv .src{position:absolute;top:22px;right:22px;font-size:.75rem;font-weight:600;color:var(--teal-d);background:var(--mint);padding:3px 8px;border-radius:6px}
+.rv .src.sample{color:var(--saffron-d);background:#FDF1DD}
+@media (max-width:760px){.rv-feature{grid-template-columns:1fr;padding:30px 24px}.rv-feature .stat{border:0;padding:0;text-align:left}}
 .offices-inline{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
 .offices-inline address{font-style:normal;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;font-size:.95rem}
 @media (max-width:560px){.offices-inline{grid-template-columns:1fr}}
@@ -613,9 +635,26 @@ HOME_FAQ = [
      "Yes. Endodontic practices get a version of our program built around referral relationships and urgent searches like root canal near me or emergency endodontist."),
 ]
 
-REVIEWS_HTML = ("" if not REVIEWS else '<section class="tint"><div class="wrap"><h2>What practices say.</h2><div class="reviews">' + "".join(
-    f'<figure><blockquote>{html.escape(r["quote"])}</blockquote><figcaption><b>{html.escape(r["name"])}</b>, {html.escape(r["role"])}, {html.escape(r["place"])}'
-    + (f' <span class="small">via {html.escape(r["source"])}</span>' if r.get("source") else "") + '</figcaption></figure>' for r in REVIEWS) + '</div></div></section>')
+def reviews_section(items, sample=False, metric=None):
+    if not items: return ""
+    def stars(n=5): return '<span class="stars" aria-label="' + str(n) + ' out of 5 stars">' + "&#9733;" * n + "</span>"
+    def initials(n): return "".join(w[0] for w in n.replace("Dr. ", "").split()[:2]).upper()
+    src = lambda r: '<span class="src sample">Sample</span>' if sample else (f'<span class="src">{html.escape(r["source"])}</span>' if r.get("source") else "")
+    first, rest = items[0], items[1:]
+    feat = (f'<div class="rv-feature"><div>{stars()}<blockquote>&ldquo;{html.escape(first["quote"])}&rdquo;</blockquote>'
+            f'<div class="who"><span class="av a3">{initials(first["name"])}</span><div><b>{html.escape(first["name"])}</b><br><span>{html.escape(first["role"])}, {html.escape(first["place"])}</span></div></div></div>'
+            + (f'<div class="stat"><b>{metric[0]}</b><span>{metric[1]}</span></div>' if metric else "") + '</div>')
+    cards = "".join(
+        f'<figure class="rv">{src(r)}{stars(r.get("stars", 5))}' + (f'<h3>{html.escape(r["title"])}</h3>' if r.get("title") else "")
+        + f'<blockquote>{html.escape(r["quote"])}</blockquote><figcaption><span class="av {["","a2","a3"][i % 3]}">{initials(r["name"])}</span>'
+        f'<div><b>{html.escape(r["name"])}</b><span>{html.escape(r["role"])}, {html.escape(r["place"])}</span></div></figcaption></figure>'
+        for i, r in enumerate(rest))
+    badge = '<span class="rv-badge">Design preview</span>' if sample else ""
+    note = ('<p class="rv-note"><b>Sample content.</b> These reviews are placeholders written to show the layout. '
+            'They are not from real clients and will be replaced with genuine, approved testimonials before this section goes live.</p>') if sample else ""
+    return (f'<section class="tint" id="reviews"><div class="wrap">{badge}<div class="rv-head"><div><h2>What practices say.</h2>'
+            f'<p class="lede">Orthodontists and endodontists on working with {CONFIG["brand"]}.</p></div>'
+            f'<a class="btn btn-ghost" href="/free-audit/">Get your free practice audit</a></div>{note}{feat}<div class="reviews">{cards}</div></div></section>')
 
 home_body = f'''
 <section class="hero"><div class="wrap hero-grid">
@@ -732,7 +771,7 @@ home_body = f'''
 </div>
 <p class="small" style="margin-top:18px">Prices in USD. Multi-location groups and very competitive metro areas are quoted after the free audit.</p>
 </div></section>
-{REVIEWS_HTML}
+{reviews_section(REVIEWS)}
 <section><div class="wrap">
 <h2>What is one more case start worth to you?</h2>
 <p class="lede">Orthodontic treatment is a high value decision, so a small lift in new patients goes a long way. Enter your own numbers.</p>
@@ -1212,6 +1251,24 @@ page("/privacy-policy/", "Privacy Policy | " + CONFIG["brand"], "How " + CONFIG[
 <h2>Your rights</h2><p>Email <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a> to access, correct or delete your information. We do not sell personal information.</p>
 <h2>Contact</h2>{"".join(office_html(o) for o in OFFICES)}
 </div></section>''')
+
+SAMPLE_REVIEWS = [
+    {"name": "Dr. Sample A", "role": "Orthodontist", "place": "Texas", "quote": "We went from page two of the map results to the top three for orthodontist near me in our main town, and the monthly report finally shows which calls came from Google."},
+    {"name": "Office Manager", "role": "Orthodontic practice", "place": "Florida", "title": "Reporting we actually read", "quote": "Every month we get a short report with calls, consult requests and the map grid. It takes five minutes to read and tells us exactly what changed."},
+    {"name": "Dr. Sample B", "role": "Endodontist", "place": "Arizona", "title": "Referrals got easier", "quote": "The new referral form saves our referring offices a phone call. Dentists send patients through the website now, and the front desk spends less time chasing paperwork."},
+    {"name": "Practice Owner", "role": "Orthodontics, 2 locations", "place": "Ohio", "title": "Both offices ranking", "quote": "Each location finally has its own page and its own Google profile set up properly. Our second office started showing up for searches it never appeared in before."},
+    {"name": "Dr. Sample C", "role": "Orthodontist", "place": "Georgia", "title": "Website that books", "quote": "The redesign kept our rankings through launch and the consult form is much shorter. Parents tell us the site was easy to use on their phone."},
+    {"name": "Marketing Lead", "role": "Orthodontic group", "place": "California", "title": "Straight answers", "quote": "No jargon and no long contract. When something was not working, we heard about it before we had to ask."},
+    {"name": "Dr. Sample D", "role": "Orthodontist", "place": "North Carolina", "title": "Profile that wins the click", "quote": "Our Google profile used to have old photos and half our treatments missing. Now it is complete, active every week, and the review routine is easy for our team."},
+    {"name": "Office Manager", "role": "Endodontic practice", "place": "Colorado", "title": "Urgent calls", "quote": "We show up for root canal searches in our area and the click to call setup works. More same day calls come straight from our Google listing."},
+    {"name": "Dr. Sample E", "role": "Orthodontist", "place": "Illinois", "title": "One practice per market", "quote": "Knowing they will not work with the practice down the road mattered to us. It feels like a partner, not a vendor."},
+    {"name": "Practice Owner", "role": "Orthodontics", "place": "Washington", "title": "Clear first 90 days", "quote": "The audit showed us exactly where we were losing patients, and the first 90 days followed the plan we were shown on day one."},
+]
+page("/reviews-preview/", "Reviews section preview | " + CONFIG["brand"], "Design preview of the reviews section with sample content.",
+     f'''<section class="page-hero" style="border:0;padding-bottom:40px"><div class="wrap"><span class="rv-badge">Internal preview</span>
+<h1>Reviews section preview</h1>
+<p class="lede">This page shows how the reviews section will look on the home page. All reviews below are sample placeholders, not real clients. It is not linked from the site and is hidden from search engines.</p></div></section>
+{reviews_section(SAMPLE_REVIEWS, sample=True, metric=("Top 3", "map pack position for the main search, example metric"))}''', noindex=True)
 
 page("/404.html", "Page not found | " + CONFIG["brand"], "This page could not be found.",
      '''<section class="page-hero" style="border:0"><div class="wrap"><h1>That page is not here.</h1>
