@@ -1284,7 +1284,9 @@ page("/thank-you/", "Thank you | " + CONFIG["brand"], "Your request has been rec
      f'''<section class="page-hero" style="border:0"><div class="wrap"><h1 id="tyH">Your audit request is in.</h1>
 <p class="lede" id="tyP">We will send your recorded audit to your email within 2 business days. If you have a question in the meantime, email <a href="mailto:{CONFIG["email"]}">{CONFIG["email"]}</a>.</p>
 <div class="cta-row"><a class="btn btn-ghost" href="/">Back to the homepage</a></div></div></section>''', noindex=True,
-     script="""<script>(function(){var q=new URLSearchParams(location.search).get('form');if(q&&typeof gtag==='function'){gtag('event','generate_lead',{form_id:q==='contact'?'contact':'free_audit',method:'website_form'});history.replaceState(null,'',location.pathname);}})();</script><script>if(new URLSearchParams(location.search).get('form')==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}</script>""")
+     script="""<script>(function(){var q=new URLSearchParams(location.search).get('form');
+if(q==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}
+if(q&&typeof gtag==='function'){gtag('event','generate_lead',{form_id:q==='contact'?'contact':'free_audit',method:'website_form'});history.replaceState(null,'',location.pathname);}})();</script>""")
 
 page("/privacy-policy/", "Privacy Policy | " + CONFIG["brand"], "How " + CONFIG["brand"] + " collects and uses information submitted through this website.",
      f'''<section><div class="wrap prose"><h1>Privacy policy</h1><p class="small">Last updated {TODAY}</p>

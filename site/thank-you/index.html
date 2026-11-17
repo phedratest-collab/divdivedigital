@@ -392,6 +392,8 @@ form .btn[disabled]{opacity:.7;cursor:wait}
 </div>
 <div class="foot-base"><span>&copy; 2026 Dive Dive Digital. All rights reserved.</span><span>Practice names shown in examples are fictional.</span></div>
 </div></footer>
-<script>(function(){var q=new URLSearchParams(location.search).get('form');if(q&&typeof gtag==='function'){gtag('event','generate_lead',{form_id:q==='contact'?'contact':'free_audit',method:'website_form'});history.replaceState(null,'',location.pathname);}})();</script><script>if(new URLSearchParams(location.search).get('form')==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}</script>
+<script>(function(){var q=new URLSearchParams(location.search).get('form');
+if(q==='contact'){document.getElementById('tyH').textContent='Thanks, your message is in.';document.getElementById('tyP').firstChild.textContent='We will reply within one business day. If it is urgent, email ';}
+if(q&&typeof gtag==='function'){gtag('event','generate_lead',{form_id:q==='contact'?'contact':'free_audit',method:'website_form'});history.replaceState(null,'',location.pathname);}})();</script>
 </body>
 </html>
