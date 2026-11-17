@@ -656,6 +656,18 @@ def reviews_section(items, sample=False, metric=None):
             f'<p class="lede">Orthodontists and endodontists on working with {CONFIG["brand"]}.</p></div>'
             f'<a class="btn btn-ghost" href="/free-audit/">Get your free practice audit</a></div>{note}{feat}<div class="reviews">{cards}</div></div></section>')
 
+SAMPLE_REVIEWS = [
+    {"name": "Dr. Sample A", "role": "Orthodontist", "place": "Texas", "quote": "We went from page two of the map results to the top three for orthodontist near me in our main town, and the monthly report finally shows which calls came from Google."},
+    {"name": "Office Manager", "role": "Orthodontic practice", "place": "Florida", "title": "Reporting we actually read", "quote": "Every month we get a short report with calls, consult requests and the map grid. It takes five minutes to read and tells us exactly what changed."},
+    {"name": "Dr. Sample B", "role": "Endodontist", "place": "Arizona", "title": "Referrals got easier", "quote": "The new referral form saves our referring offices a phone call. Dentists send patients through the website now, and the front desk spends less time chasing paperwork."},
+    {"name": "Practice Owner", "role": "Orthodontics, 2 locations", "place": "Ohio", "title": "Both offices ranking", "quote": "Each location finally has its own page and its own Google profile set up properly. Our second office started showing up for searches it never appeared in before."},
+    {"name": "Dr. Sample C", "role": "Orthodontist", "place": "Georgia", "title": "Website that books", "quote": "The redesign kept our rankings through launch and the consult form is much shorter. Parents tell us the site was easy to use on their phone."},
+    {"name": "Marketing Lead", "role": "Orthodontic group", "place": "California", "title": "Straight answers", "quote": "No jargon and no long contract. When something was not working, we heard about it before we had to ask."},
+    {"name": "Dr. Sample D", "role": "Orthodontist", "place": "North Carolina", "title": "Profile that wins the click", "quote": "Our Google profile used to have old photos and half our treatments missing. Now it is complete, active every week, and the review routine is easy for our team."},
+    {"name": "Office Manager", "role": "Endodontic practice", "place": "Colorado", "title": "Urgent calls", "quote": "We show up for root canal searches in our area and the click to call setup works. More same day calls come straight from our Google listing."},
+    {"name": "Dr. Sample E", "role": "Orthodontist", "place": "Illinois", "title": "One practice per market", "quote": "Knowing they will not work with the practice down the road mattered to us. It feels like a partner, not a vendor."},
+    {"name": "Practice Owner", "role": "Orthodontics", "place": "Washington", "title": "Clear first 90 days", "quote": "The audit showed us exactly where we were losing patients, and the first 90 days followed the plan we were shown on day one."},
+]
 home_body = f'''
 <section class="hero"><div class="wrap hero-grid">
 <div>
@@ -771,7 +783,7 @@ home_body = f'''
 </div>
 <p class="small" style="margin-top:18px">Prices in USD. Multi-location groups and very competitive metro areas are quoted after the free audit.</p>
 </div></section>
-{reviews_section(REVIEWS)}
+{reviews_section(REVIEWS) if REVIEWS else reviews_section(SAMPLE_REVIEWS, sample=True, metric=("Top 3", "map pack position for the main search, example metric"))}
 <section><div class="wrap">
 <h2>What is one more case start worth to you?</h2>
 <p class="lede">Orthodontic treatment is a high value decision, so a small lift in new patients goes a long way. Enter your own numbers.</p>
@@ -1262,18 +1274,6 @@ page("/privacy-policy/", "Privacy Policy | " + CONFIG["brand"], "How " + CONFIG[
 <h2>Contact</h2>{"".join(office_html(o) for o in OFFICES)}
 </div></section>''')
 
-SAMPLE_REVIEWS = [
-    {"name": "Dr. Sample A", "role": "Orthodontist", "place": "Texas", "quote": "We went from page two of the map results to the top three for orthodontist near me in our main town, and the monthly report finally shows which calls came from Google."},
-    {"name": "Office Manager", "role": "Orthodontic practice", "place": "Florida", "title": "Reporting we actually read", "quote": "Every month we get a short report with calls, consult requests and the map grid. It takes five minutes to read and tells us exactly what changed."},
-    {"name": "Dr. Sample B", "role": "Endodontist", "place": "Arizona", "title": "Referrals got easier", "quote": "The new referral form saves our referring offices a phone call. Dentists send patients through the website now, and the front desk spends less time chasing paperwork."},
-    {"name": "Practice Owner", "role": "Orthodontics, 2 locations", "place": "Ohio", "title": "Both offices ranking", "quote": "Each location finally has its own page and its own Google profile set up properly. Our second office started showing up for searches it never appeared in before."},
-    {"name": "Dr. Sample C", "role": "Orthodontist", "place": "Georgia", "title": "Website that books", "quote": "The redesign kept our rankings through launch and the consult form is much shorter. Parents tell us the site was easy to use on their phone."},
-    {"name": "Marketing Lead", "role": "Orthodontic group", "place": "California", "title": "Straight answers", "quote": "No jargon and no long contract. When something was not working, we heard about it before we had to ask."},
-    {"name": "Dr. Sample D", "role": "Orthodontist", "place": "North Carolina", "title": "Profile that wins the click", "quote": "Our Google profile used to have old photos and half our treatments missing. Now it is complete, active every week, and the review routine is easy for our team."},
-    {"name": "Office Manager", "role": "Endodontic practice", "place": "Colorado", "title": "Urgent calls", "quote": "We show up for root canal searches in our area and the click to call setup works. More same day calls come straight from our Google listing."},
-    {"name": "Dr. Sample E", "role": "Orthodontist", "place": "Illinois", "title": "One practice per market", "quote": "Knowing they will not work with the practice down the road mattered to us. It feels like a partner, not a vendor."},
-    {"name": "Practice Owner", "role": "Orthodontics", "place": "Washington", "title": "Clear first 90 days", "quote": "The audit showed us exactly where we were losing patients, and the first 90 days followed the plan we were shown on day one."},
-]
 page("/reviews-preview/", "Reviews section preview | " + CONFIG["brand"], "Design preview of the reviews section with sample content.",
      f'''<section class="page-hero" style="border:0;padding-bottom:40px"><div class="wrap"><span class="rv-badge">Internal preview</span>
 <h1>Reviews section preview</h1>
