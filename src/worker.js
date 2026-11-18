@@ -23,6 +23,7 @@ function back(request, path, params) {
 }
 
 async function sendEmail(env, lead) {
+  const resendKey = env.RESEND_API_KEY || env.DIV;
   const from = env.LEAD_FROM, to = env.LEAD_TO;
   if (!from || !to) return "skipped";
   const subject = lead.type === "audit"
@@ -31,10 +32,10 @@ async function sendEmail(env, lead) {
   const body = Object.entries(lead).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join("\n");
 
   // Preferred: Resend API (set RESEND_API_KEY as a secret on this Worker).
-  if (env.RESEND_API_KEY) {
+  if (resendKey) {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      headers: { "Authorization": `Bearer ${resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         from: `Dive Dive Digital Website <${from}>`,
         to: [to],
@@ -102,13 +103,13 @@ async function handleLead(request, env, ctx) {
   if (form.get("_diag") === "57efb96d168634c8ab7a4c23bde58a90") {
     let st;
     try { st = await sendEmail(env, lead); } catch (e) { st = "error: " + String(e && e.message || e); }
-    return new Response(`email: ${st}\nresend key: ${env.RESEND_API_KEY ? "present" : "MISSING"}\nfrom: ${env.LEAD_FROM}\nto: ${env.LEAD_TO}`, { headers: { "content-type": "text/plain" } });
+    return new Response(`email: ${st}\nresend key: ${(env.RESEND_API_KEY || env.DIV) ? "present" : "MISSING"}\nfrom: ${env.LEAD_FROM}\nto: ${env.LEAD_TO}`, { headers: { "content-type": "text/plain" } });
   }
   ctx.waitUntil((async () => {
     let status;
     try { status = await sendEmail(env, lead); }
     catch (e) { status = "error: " + String(e && e.message || e).slice(0, 500); }
-    console.log(`Lead ${lead.id} email: ${status} (resend key ${env.RESEND_API_KEY ? "present" : "MISSING"}, to ${env.LEAD_TO})`);
+    console.log(`Lead ${lead.id} email: ${status} (resend key ${(env.RESEND_API_KEY || env.DIV) ? "present" : "MISSING"}, to ${env.LEAD_TO})`);
     try {
       await env.LEADS.put(`lead:${lead.id}`, JSON.stringify({ ...lead, email_status: status }), {
         metadata: { type, name: lead.name, email: lead.email, practice: lead.practice || "", email_status: status.slice(0, 200) },
