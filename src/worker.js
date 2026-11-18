@@ -99,12 +99,6 @@ async function handleLead(request, env, ctx) {
     console.error("KV save failed", e);
     return back(request, formPage, { error: "server" });
   }
-  // TEMP diagnostics: remove after email delivery is confirmed.
-  if (form.get("_diag") === "57efb96d168634c8ab7a4c23bde58a90") {
-    let st;
-    try { st = await sendEmail(env, lead); } catch (e) { st = "error: " + String(e && e.message || e); }
-    return new Response(`email: ${st}\nresend key: ${(env.RESEND_API_KEY || env.DIV) ? "present" : "MISSING"}\nfrom: ${env.LEAD_FROM}\nto: ${env.LEAD_TO}`, { headers: { "content-type": "text/plain" } });
-  }
   ctx.waitUntil((async () => {
     let status;
     try { status = await sendEmail(env, lead); }
