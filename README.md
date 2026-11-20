@@ -1,4 +1,4 @@
-# Dive Dive Digital website
+# DivDive Digital website
 
 Static site, ready for Cloudflare Pages. The `site/` folder is what you upload.
 

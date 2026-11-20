@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static site generator for Dive Dive Digital.
+"""Static site generator for DivDive Digital.
 
 Edit CONFIG below, then run:  python3 build.py
 Output goes to ./site  (upload that folder to Cloudflare Pages).
@@ -13,7 +13,7 @@ OUT = os.path.join(HERE, "site")
 # ---------------------------------------------------------------- CONFIG
 CONFIG = {
     "site_url": "https://divdivedigital.com",          # change if your domain differs
-    "brand": "Dive Dive Digital",
+    "brand": "DivDive Digital",
     "email": "info@divdivedigital.com",                # main business inbox (Mailflare)
     "booking_url": "/free-audit/",                       # swap for your Calendly / Cal.com link later
     "founder": "Muhammad Afzal",
@@ -499,6 +499,7 @@ ORG = {
     "@type": "ProfessionalService",
     "@id": ORG_ID,
     "name": CONFIG["brand"],
+    "alternateName": "Divdivedigital",
     "url": S + "/",
     "logo": S + "/logo-512.png",
     "image": S + "/og-image.png",
@@ -552,6 +553,13 @@ def page(path, title, desc, body, schema=None, noindex=False, script="", og="og-
     doc = f'''<!doctype html>
 <html lang="en-US">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){{w[l]=w[l]||[];w[l].push({{'gtm.start':
+new Date().getTime(),event:'gtm.js'}});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+}})(window,document,'script','dataLayer','GTM-N74CXLWX');</script>
+<!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48HJDGG4NW"></script>
 <script>
@@ -587,6 +595,9 @@ def page(path, title, desc, body, schema=None, noindex=False, script="", og="og-
 <script type="application/ld+json">{ld}</script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N74CXLWX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 {header(path)}
 <main id="main">
 {body}
@@ -694,7 +705,7 @@ home_body = f'''
 <section class="hero"><div class="wrap hero-grid">
 <div>
 <h1>Orthodontist marketing that books more consults straight from Google.</h1>
-<p class="lede">Dive Dive Digital is an orthodontist marketing agency for practices that want more consult requests from Google. We combine local SEO, Google Business Profile optimization and conversion focused website work, and we take one orthodontic practice per local market.</p>
+<p class="lede">DivDive Digital is an orthodontist marketing agency for practices that want more consult requests from Google. We combine local SEO, Google Business Profile optimization and conversion focused website work, and we take one orthodontic practice per local market.</p>
 <div class="cta-row"><a class="btn btn-primary" href="/free-audit/">Get your free practice audit</a><a class="btn btn-ghost" href="#how">See how it works</a></div>
 <ul class="proof-strip">
 <li>{ico("check")}Specialist dental practices only</li>

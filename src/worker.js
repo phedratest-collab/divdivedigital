@@ -1,4 +1,4 @@
-// Dive Dive Digital: static site + form handler.
+// DivDive Digital: static site + form handler.
 // POST /api/lead  -> validates, saves to KV (LEADS), optionally emails (LEAD_EMAIL binding), redirects to thank-you page.
 // GET  /api/leads?key=ADMIN_KEY -> simple list of recent leads (only if ADMIN_KEY secret is set).
 
@@ -37,7 +37,7 @@ async function sendEmail(env, lead) {
       method: "POST",
       headers: { "Authorization": `Bearer ${resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: `Dive Dive Digital Website <${from}>`,
+        from: `DivDive Digital Website <${from}>`,
         to: [to],
         reply_to: lead.email,
         subject,
@@ -52,7 +52,7 @@ async function sendEmail(env, lead) {
   if (!env.LEAD_EMAIL) return "skipped";
   const { EmailMessage } = await import("cloudflare:email");
   const raw = [
-    `From: Dive Dive Digital Website <${from}>`,
+    `From: DivDive Digital Website <${from}>`,
     `To: ${to}`,
     `Reply-To: ${lead.email}`,
     `Subject: ${subject}`,
